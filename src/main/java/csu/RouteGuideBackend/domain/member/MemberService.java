@@ -1,5 +1,7 @@
 package csu.RouteGuideBackend.domain.member;
 
+import csu.RouteGuideBackend.dto.MemberEditDto;
+import csu.RouteGuideBackend.dto.MemberJoinDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -39,9 +41,9 @@ public class MemberService {
     }
 
 
-    public Member patch(int id, EditForm dto) {
+    public Member patch(int id, MemberEditDto dto) {
         Member target = findById(id);
-        Member entity = EditForm.toEntity(target, dto, passwordEncoder);
+        Member entity = MemberEditDto.toEntity(target, dto, passwordEncoder);
         memberRepository.save(entity);
         return entity;
     }
