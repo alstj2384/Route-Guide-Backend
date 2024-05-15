@@ -130,7 +130,7 @@ public class RelationshipService {
      */
     public Relationship rejectRelationshipRequest(Long id) throws Exception{
         Relationship relationship = relationshipRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("요청을 찾을 수 없습니다!"));
-        Relationship friendRelationship = relationshipRepository.findRelationshipByUserEmailAndFriendEmail(relationship.getMember().getEmail(), relationship.getFriendEmail())
+        Relationship friendRelationship = relationshipRepository.findRelationshipByUserEmailAndFriendEmail(relationship.getFriendEmail(),relationship.getMember().getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("요청을 찾을 수 없습니다"));
 
         relationshipRepository.delete(relationship);
