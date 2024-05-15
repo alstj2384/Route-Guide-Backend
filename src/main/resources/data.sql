@@ -1,0 +1,2 @@
+INSERT INTO member (is_disabled, email, password, phone_number, role, user_name) values (1, 'user1', '$2a$10$q26d8ddhSccFlDV725Ul9ujjeal5Q3Ch69Mn.i.BpNV7uU5nmEwoO', '010-1234-1234', 'ROLE_USER', '유저1');
+INSERT INTO member (is_disabled, email, password, phone_number, role, user_name) values (0, 'user2', '$2a$10$Q9cyzfvL1G6CoION2zLECOojLt5sVYL4fo9JR.C/9bkXbsArou9fe', '010-4321-4321', 'ROLE_USER', '유저2');
