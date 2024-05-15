@@ -29,15 +29,9 @@ public class Relationship {
     @Column(name = "is_from",nullable = false)
     private boolean isFrom;
 
-    @Column(name = "counterpart_id")
-    private Long counterpartId;
-
     public void acceptRelationshipRequest(){
         status = RelationshipStatus.ACCEPT;
     }
 
-    public void setCounterpartId(Long id){
-        counterpartId = id;
-    }
 
 }
