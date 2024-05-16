@@ -2,8 +2,8 @@ package csu.RouteGuideBackend.domain.relationship;
 
 import csu.RouteGuideBackend.domain.member.Member;
 import csu.RouteGuideBackend.domain.member.MemberRepository;
-import csu.RouteGuideBackend.dto.ViewRelationshipDto;
-import csu.RouteGuideBackend.dto.WaitingRelationshipDto;
+import csu.RouteGuideBackend.dto.relationship.ViewRelationshipDto;
+import csu.RouteGuideBackend.dto.relationship.WaitingRelationshipDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

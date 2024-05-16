@@ -1,9 +1,9 @@
 package csu.RouteGuideBackend.domain.pathfind;
 
 import csu.RouteGuideBackend.config.PrincipalDetails;
-import csu.RouteGuideBackend.dto.DestinationViewDto;
-import csu.RouteGuideBackend.dto.StartPathFindDto;
-import csu.RouteGuideBackend.dto.StartPathFindViewDto;
+import csu.RouteGuideBackend.dto.pathfind.DestinationViewDto;
+import csu.RouteGuideBackend.dto.pathfind.StartPathFindDto;
+import csu.RouteGuideBackend.dto.pathfind.StartPathFindViewDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
