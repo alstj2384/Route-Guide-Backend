@@ -1,9 +1,7 @@
 package csu.RouteGuideBackend.domain.pathfind;
 
 import csu.RouteGuideBackend.config.PrincipalDetails;
-import csu.RouteGuideBackend.dto.pathfind.DestinationViewDto;
-import csu.RouteGuideBackend.dto.pathfind.StartPathFindDto;
-import csu.RouteGuideBackend.dto.pathfind.StartPathFindViewDto;
+import csu.RouteGuideBackend.dto.pathfind.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -40,8 +38,15 @@ public class PathfindApiController {
             throw new Exception("파싱중 오류 발생");
         }
 
-//        objectMapper.writeValueAsString(startPathFindViewDto);
         return ResponseEntity.ok().body(startPathFindViewDto);
+    }
+
+    @PostMapping("/route")
+    public ResponseEntity<RouteResponseDto> route(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody RouteRequestDto dto){
+        log.info("경로 조회 요청");
+        RouteResponseDto response = pathfindService.findRoute(dto);
+
+        return ResponseEntity.ok().body(response);
     }
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> IlliegalArgumentException(IllegalArgumentException ex) {
