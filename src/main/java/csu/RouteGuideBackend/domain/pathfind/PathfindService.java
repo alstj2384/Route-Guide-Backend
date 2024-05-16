@@ -163,6 +163,10 @@ public class PathfindService {
 
         Pathfind save = pathfindRepository.save(pathfind);
 
+        double prevX = 0;
+        double prevY = 0;
+        int index = 0;
+
         try {
             JSONParser jsonParser = new JSONParser();
             JSONObject json = (JSONObject) jsonParser.parse(response);
@@ -186,10 +190,15 @@ public class PathfindService {
                     route.setY(Double.parseDouble(coor.get(1).toString()));
                 }
 
+                // 좌표가 중복으로 제공되는 경우 넘어가기
+                if(route.getX() == prevX && route.getY() == prevY) continue;
+                prevX = route.getX();
+                prevY = route.getY();
+
                 JSONObject properties = (JSONObject) obj.get("properties");
                 route.setDescription(properties.get("description").toString());
 
-                route.setIndex(Integer.parseInt((properties.get("index")).toString()));
+                route.setIndex(index++);
                 pathfind.getRoutes().add(route);
                 routeRepository.save(route);
             }
@@ -228,8 +237,8 @@ public class PathfindService {
         double y = currentRoute.getY(); // 위도 Lat
 
         // 현재 위치가 다음 위치와 몇 m 거리인 지 확인
-        double distance = haversine(y, x, currentRoute.getY(), currentRoute.getX());
-
+        double distance = haversine(y, x, dto.getY(), dto.getX());
+        log.info("{}",distance);
 
 
         if(distance <= 3){
@@ -260,7 +269,7 @@ public class PathfindService {
     double haversine(double lat1, double lon1, double lat2, double lon2){
         // 지구의 반지름(km)
         double R = 6371.0;
-
+        log.info("{},{},{},{}", lat1, lon1, lat2, lon2);
         // 라디안으로 변환
         double dLat = Math.toRadians(lat2 - lat1);
         double dLon = Math.toRadians(lon2 - lon1);
@@ -269,10 +278,10 @@ public class PathfindService {
 
         // Haversine 공식 적용
         double a = Math.pow(Math.sin(dLat/2), 2) +
-                Math.cos(lat1) * Math.cos(lat2) *
-                Math.pow(Math.sin(dLon / 2), 2);
+                Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(dLon / 2), 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 
+        log.info("{}, {}", a, c);
         // 거리 계산 (km)
         double distance = R * c * 1000;
 
