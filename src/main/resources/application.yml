@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    include: secrets
   application:
     name: name=Route-Guide-Backend
   datasource:
