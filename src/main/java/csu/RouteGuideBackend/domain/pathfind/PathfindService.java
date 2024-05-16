@@ -29,9 +29,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PathfindService {
 
-    @Value("${tmap-api-host}")
+    @Value("${tmap.api.host}")
     private String TMAP_API_HOST;
-    @Value("${tmap-api-key}")
+    @Value("${tmap.api.key}")
     private String TMAP_API_KEY;
 
     private final PathfindRepository pathfindRepository;
