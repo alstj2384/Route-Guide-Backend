@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -258,6 +259,63 @@ public class PathfindService {
         }
     }
 
+    /**
+     *
+     * @param lat 현재 x위치
+     * @param lon 현재 y위치
+     * @return ReverseGeocoding api httpresponse
+     * @throws Exception
+     */
+
+    // lat = 위도, lon = 경도
+    public HttpResponse<String> ReverseGeocoding(double lat, double lon) throws Exception{
+        log.info("ReverseGeocoding start");
+        HttpClient httpClient = HttpClient.newHttpClient();
+
+        // URL 설정
+        String uri = TMAP_API_HOST+"/tmap/geo/reversegeocoding?version=1&lat="+lat+"&lon="+lon+"&coordType=WGS84GEO&addressType=A02";
+        log.info("request uri : {}", uri);
+
+
+        // Request 헤더 작성
+        HttpRequest request = HttpRequest.newBuilder(URI.create(uri))
+                .GET()
+                .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                .header("appKey", TMAP_API_KEY)
+                .build();
+
+        // Request 전송 및 응답 저장
+        log.info("request : {}", request);
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if(response.statusCode() == 401){
+            throw new IllegalArgumentException("권한이 없습니다!");
+        }
+        return response;
+    }
+
+    public String parseGeocoding(HttpResponse<String> response) throws ParseException{
+        log.info("parse Geocoding Response");
+
+        log.info("{}", response.body());
+
+        String body = response.body();
+        String address = null;
+        // 응답 정보 파싱
+        try {
+            JSONParser jsonParser = new JSONParser();
+            JSONObject json = (JSONObject) jsonParser.parse(body);
+            log.info("json : {}", json.toString());
+            JSONObject addressInfo = (JSONObject) json.get("addressInfo");
+            log.info("address info : {}", addressInfo.toString());
+
+            address = (String) addressInfo.get("fullAddress");
+        } catch(Exception e){
+            throw new ParseException(2);
+        }
+
+        return address;
+    }
     /**
      * 두 좌표를 바탕으로 거리를 m로 반환합니다
      * @param lat1
