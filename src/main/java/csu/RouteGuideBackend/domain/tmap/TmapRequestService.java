@@ -36,8 +36,8 @@ public class TmapRequestService {
      * @return
      * @throws Exception
      */
-
-    public HttpResponse<String> searchDestination(String destination, double x, double y) throws Exception{
+    // https://tmap-skopenapi.readme.io/reference/%EC%9E%A5%EC%86%8C%ED%86%B5%ED%95%A9%EA%B2%80%EC%83%89
+    public HttpResponse<String> pois(String destination, double x, double y) throws Exception{
         log.info("목적지 검색 시작");
         HttpClient httpClient = HttpClient.newHttpClient();
 
@@ -73,7 +73,8 @@ public class TmapRequestService {
      * @return - tmap api 응답
      * @throws Exception
      */
-    public HttpResponse<String> startPathfind(StartPathFindDto dto) throws Exception{
+    // https://tmap-skopenapi.readme.io/reference/%EB%B3%B4%ED%96%89%EC%9E%90-%EA%B2%BD%EB%A1%9C%EC%95%88%EB%82%B4
+    public HttpResponse<String> pedestrian(StartPathFindDto dto) throws Exception{
         log.info("길찾기 경로 탐색 시작");
         HttpClient httpClient = HttpClient.newHttpClient();
 
@@ -100,8 +101,10 @@ public class TmapRequestService {
         return response;
     }
 
+
     // lat = 위도, lon = 경도
-    public GeocodingResponse ReverseGeocoding(GeocodingRequest dto) throws Exception{
+    // https://tmap-skopenapi.readme.io/reference/reversegeocoding
+    public GeocodingResponse reverseGeocoding(GeocodingRequest dto) throws Exception{
         log.info("ReverseGeocoding start");
         HttpClient httpClient = HttpClient.newHttpClient();
 
