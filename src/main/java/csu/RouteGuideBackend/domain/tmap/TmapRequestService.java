@@ -10,8 +10,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.net.URI;
 import java.net.URLEncoder;
@@ -60,11 +62,12 @@ public class TmapRequestService {
         log.info("request : {}", request);
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-        if(response.statusCode() == 401){
-            throw new IllegalArgumentException("권한이 없습니다!");
-        }
+        // 응답 오류여부 체크
+        checkError(response);
+
         return response;
     }
+
 
     /**
      * 길 찾기를 시작합니다
@@ -90,6 +93,9 @@ public class TmapRequestService {
         // 이제 파싱하고, 데이터 저장하면 됨
         log.info("{}", response.body());
 
+        // 응답 오류여부 체크
+        checkError(response);
+
         return response;
     }
 
@@ -111,9 +117,9 @@ public class TmapRequestService {
         log.info("request : {}", request);
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-        if(response.statusCode() == 401){
-            throw new IllegalArgumentException("권한이 없습니다!");
-        }
+
+        // 응답 오류여부 체크
+        checkError(response);
 
 //        // 응답 정보 파싱
 //        String address = parseGeocoding(response);
@@ -126,6 +132,12 @@ public class TmapRequestService {
 //        double distance = haversine(route.getY(), route.getX(), dto.getLat(), dto.getLon());
 //
 //        return GeocodingResponse.builder().description(info(address, distance)).build();
+    }
+
+
+    private void checkError(HttpResponse<String> response) throws ResponseStatusException{
+        if(response.statusCode() == 401)
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "TMAP API 요청에 대한 권한이 없습니다");
     }
 
     private HttpRequest buildGetHttpRequest(String uri){
