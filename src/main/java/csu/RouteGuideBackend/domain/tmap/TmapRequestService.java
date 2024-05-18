@@ -28,6 +28,10 @@ public class TmapRequestService {
     @Value("${tmap.api.key}")
     private String TMAP_API_KEY;
 
+    // TODO 이 부분에서 httpclient와 objectMapper를 하나로 관리해도 될까? -> 요청이 여러군데에서 온다면??
+    private final HttpClient httpClient = HttpClient.newHttpClient();
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
     /**
      * 검색어로 연관된 10개의 목적지를 검색합니다
      * @param destination : 목적지 이름
@@ -39,7 +43,6 @@ public class TmapRequestService {
     // https://tmap-skopenapi.readme.io/reference/%EC%9E%A5%EC%86%8C%ED%86%B5%ED%95%A9%EA%B2%80%EC%83%89
     public HttpResponse<String> pois(String destination, double x, double y) throws Exception{
         log.info("목적지 검색 시작");
-        HttpClient httpClient = HttpClient.newHttpClient();
 
         // URL 설정
         String uri = TMAP_API_HOST+"/tmap/pois?version=1&searchKeyword="+ URLEncoder.encode(destination, "utf-8") +
@@ -72,9 +75,7 @@ public class TmapRequestService {
     // https://tmap-skopenapi.readme.io/reference/%EB%B3%B4%ED%96%89%EC%9E%90-%EA%B2%BD%EB%A1%9C%EC%95%88%EB%82%B4
     public HttpResponse<String> pedestrian(StartPathFindDto dto) throws Exception{
         log.info("길찾기 경로 탐색 시작");
-        HttpClient httpClient = HttpClient.newHttpClient();
 
-        ObjectMapper objectMapper = new ObjectMapper();
         String requestBody = objectMapper.writeValueAsString(dto);
         // URL 설정
         String uri = TMAP_API_HOST+"/tmap/routes/pedestrian?version=1";
@@ -97,7 +98,6 @@ public class TmapRequestService {
     // https://tmap-skopenapi.readme.io/reference/reversegeocoding
     public HttpResponse<String> reverseGeocoding(GeocodingRequest dto) throws Exception{
         log.info("ReverseGeocoding start");
-        HttpClient httpClient = HttpClient.newHttpClient();
 
         // URL 설정
         String uri = TMAP_API_HOST+"/tmap/geo/reversegeocoding?version=1&lat="+dto.getLat()+"&lon="+dto.getLon()+"&coordType=WGS84GEO&addressType=A02";
