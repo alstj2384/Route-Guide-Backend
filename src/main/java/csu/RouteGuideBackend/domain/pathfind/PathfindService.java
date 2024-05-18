@@ -37,6 +37,9 @@ public class PathfindService {
     private final RouteRepository routeRepository;
     private final MemberRepository memberRepository;
 
+    public Pathfind findById(Long id){
+        return pathfindRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("요청 회원이 존재하지 않습니다"));
+    }
 
     // 목적지 검색
 
@@ -259,21 +262,13 @@ public class PathfindService {
         }
     }
 
-    /**
-     *
-     * @param lat 현재 x위치
-     * @param lon 현재 y위치
-     * @return ReverseGeocoding api httpresponse
-     * @throws Exception
-     */
-
     // lat = 위도, lon = 경도
-    public HttpResponse<String> ReverseGeocoding(double lat, double lon) throws Exception{
+    public GeocodingResponse ReverseGeocoding(GeocodingRequest dto) throws Exception{
         log.info("ReverseGeocoding start");
         HttpClient httpClient = HttpClient.newHttpClient();
 
         // URL 설정
-        String uri = TMAP_API_HOST+"/tmap/geo/reversegeocoding?version=1&lat="+lat+"&lon="+lon+"&coordType=WGS84GEO&addressType=A02";
+        String uri = TMAP_API_HOST+"/tmap/geo/reversegeocoding?version=1&lat="+dto.getLat()+"&lon="+dto.getLon()+"&coordType=WGS84GEO&addressType=A02";
         log.info("request uri : {}", uri);
 
 
@@ -291,9 +286,23 @@ public class PathfindService {
         if(response.statusCode() == 401){
             throw new IllegalArgumentException("권한이 없습니다!");
         }
-        return response;
+
+        // 응답 정보 파싱
+        String address = parseGeocoding(response);
+
+        // 거리 계산을 위한 객체 받아오기
+        Pathfind find = pathfindRepository.findById(dto.getPathfindId()).orElseThrow(() -> new IllegalArgumentException("요청 정보가 존재하지 않습니다"));
+        Route route = find.getRoutes().get(dto.getIndex());
+
+        // 거리 계산
+        double distance = haversine(route.getY(), route.getX(), dto.getLat(), dto.getLon());
+
+        return GeocodingResponse.builder().description(info(address, distance)).build();
     }
 
+    public String info(String address, double distance){
+        return "현재 위치는 " + address + " 이며, 다음 위치까지" + (int)distance + "미터 남았습니다";
+    }
     public String parseGeocoding(HttpResponse<String> response) throws ParseException{
         log.info("parse Geocoding Response");
 

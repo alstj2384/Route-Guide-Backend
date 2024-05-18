@@ -44,13 +44,42 @@ public class PathfindApiController {
     @PostMapping("/route")
     public ResponseEntity<RouteResponseDto> route(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody RouteRequestDto dto){
         log.info("경로 조회 요청");
+        Pathfind pathfind = pathfindService.findById(dto.getPathfindId());
+        checkValidAndThrowException(principalDetails, pathfind.getMember().getEmail());
+
         RouteResponseDto response = pathfindService.findRoute(dto);
 
         return ResponseEntity.ok().body(response);
     }
+
+    private boolean valid(PrincipalDetails principalDetails, String userName){
+        return principalDetails.getUsername().equals(userName);
+    }
+
+    private void checkValidAndThrowException(PrincipalDetails principalDetails, String userName) throws IllegalArgumentException{
+        if(!valid(principalDetails, userName)){
+            throw new IllegalArgumentException("요청 정보에 대한 권한이 존재하지 않습니다");
+        }
+    }
+
+    @PostMapping("/current-location")
+    public ResponseEntity<?> reverseGeocoding(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                              @RequestBody GeocodingRequest dto) throws Exception{
+        // 경로 정보 조회
+        Pathfind pathfind = pathfindService.findById(dto.getPathfindId());
+        checkValidAndThrowException(principalDetails, pathfind.getMember().getEmail());
+
+        // 응답 조회
+        GeocodingResponse geocodingResponse = pathfindService.ReverseGeocoding(dto);
+
+
+        // TODO 컨트롤러 부분에서 데이터 처리할 지 서비스에서 한 번에 묶어서 처리할 지 생각해보기
+
+        return ResponseEntity.ok().body(geocodingResponse);
+    }
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> IlliegalArgumentException(IllegalArgumentException ex) {
         // 예외 처리 로직
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }
