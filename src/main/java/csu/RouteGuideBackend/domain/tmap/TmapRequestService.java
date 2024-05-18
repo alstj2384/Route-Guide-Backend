@@ -104,7 +104,7 @@ public class TmapRequestService {
 
     // lat = 위도, lon = 경도
     // https://tmap-skopenapi.readme.io/reference/reversegeocoding
-    public GeocodingResponse reverseGeocoding(GeocodingRequest dto) throws Exception{
+    public HttpResponse<String> reverseGeocoding(GeocodingRequest dto) throws Exception{
         log.info("ReverseGeocoding start");
         HttpClient httpClient = HttpClient.newHttpClient();
 
@@ -128,16 +128,16 @@ public class TmapRequestService {
             throw new IllegalArgumentException("권한이 없습니다!");
         }
 
-        // 응답 정보 파싱
-        String address = parseGeocoding(response);
-
-        // 거리 계산을 위한 객체 받아오기
-        Pathfind find = pathfindRepository.findById(dto.getPathfindId()).orElseThrow(() -> new IllegalArgumentException("요청 정보가 존재하지 않습니다"));
-        Route route = find.getRoutes().get(dto.getIndex());
-
-        // 거리 계산
-        double distance = haversine(route.getY(), route.getX(), dto.getLat(), dto.getLon());
-
-        return GeocodingResponse.builder().description(info(address, distance)).build();
+//        // 응답 정보 파싱
+//        String address = parseGeocoding(response);
+//
+//        // 거리 계산을 위한 객체 받아오기
+//        Pathfind find = pathfindRepository.findById(dto.getPathfindId()).orElseThrow(() -> new IllegalArgumentException("요청 정보가 존재하지 않습니다"));
+//        Route route = find.getRoutes().get(dto.getIndex());
+//
+//        // 거리 계산
+//        double distance = haversine(route.getY(), route.getX(), dto.getLat(), dto.getLon());
+//
+//        return GeocodingResponse.builder().description(info(address, distance)).build();
     }
 }
