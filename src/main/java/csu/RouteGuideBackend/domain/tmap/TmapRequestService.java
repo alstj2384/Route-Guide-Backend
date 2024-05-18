@@ -51,11 +51,7 @@ public class TmapRequestService {
 
         // Request 헤더 작성
         log.info("request uri : {}", uri);
-        HttpRequest request = HttpRequest.newBuilder(URI.create(uri))
-                .GET()
-                .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-                .header("appKey", TMAP_API_KEY)
-                .build();
+        HttpRequest request = buildGetHttpRequest(uri);
 
         // Request 전송 및 응답 저장
         log.info("request : {}", request);
@@ -84,12 +80,7 @@ public class TmapRequestService {
         String uri = TMAP_API_HOST+"/tmap/routes/pedestrian?version=1";
 
         // Request 헤더 작성
-        HttpRequest request = HttpRequest.newBuilder(URI.create(uri))
-                .POST(HttpRequest.BodyPublishers.ofString(requestBody))
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-                .header("appKey", TMAP_API_KEY)
-                .build();
+        HttpRequest request = buildPostHttpRequest(uri, requestBody);
 
         // Request 전송 및 응답 저장
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
@@ -114,11 +105,7 @@ public class TmapRequestService {
 
 
         // Request 헤더 작성
-        HttpRequest request = HttpRequest.newBuilder(URI.create(uri))
-                .GET()
-                .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-                .header("appKey", TMAP_API_KEY)
-                .build();
+        HttpRequest request = buildGetHttpRequest(uri);
 
         // Request 전송 및 응답 저장
         log.info("request : {}", request);
@@ -139,5 +126,22 @@ public class TmapRequestService {
 //        double distance = haversine(route.getY(), route.getX(), dto.getLat(), dto.getLon());
 //
 //        return GeocodingResponse.builder().description(info(address, distance)).build();
+    }
+
+    private HttpRequest buildGetHttpRequest(String uri){
+        return HttpRequest.newBuilder(URI.create(uri))
+                .GET()
+                .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                .header("appKey", TMAP_API_KEY)
+                .build();
+    }
+
+    private HttpRequest buildPostHttpRequest(String uri, String requestBody){
+        return HttpRequest.newBuilder(URI.create(uri))
+                .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                .header("appKey", TMAP_API_KEY)
+                .build();
     }
 }
