@@ -1,8 +1,8 @@
 package csu.RouteGuideBackend.domain.member;
 
 import csu.RouteGuideBackend.config.PrincipalDetails;
-import csu.RouteGuideBackend.dto.member.MemberEditDto;
-import csu.RouteGuideBackend.dto.member.MemberJoinDto;
+import csu.RouteGuideBackend.domain.member.dto.MemberEditDto;
+import csu.RouteGuideBackend.domain.member.dto.MemberJoinDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

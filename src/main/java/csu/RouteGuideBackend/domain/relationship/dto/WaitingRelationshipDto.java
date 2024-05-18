@@ -1,4 +1,4 @@
-package csu.RouteGuideBackend.dto.relationship;
+package csu.RouteGuideBackend.domain.relationship.dto;
 
 import csu.RouteGuideBackend.domain.relationship.RelationshipStatus;
 import lombok.Builder;

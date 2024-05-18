@@ -1,6 +1,7 @@
 package csu.RouteGuideBackend.domain.pathfind;
 
 import csu.RouteGuideBackend.config.PrincipalDetails;
+import csu.RouteGuideBackend.domain.pathfind.dto.*;
 import csu.RouteGuideBackend.dto.pathfind.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

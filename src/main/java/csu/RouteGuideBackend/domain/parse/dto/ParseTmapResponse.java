@@ -1,4 +1,4 @@
-package csu.RouteGuideBackend.dto.parse;
+package csu.RouteGuideBackend.domain.parse.dto;
 
 import csu.RouteGuideBackend.domain.tmap.TmapApi;
 

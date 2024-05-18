@@ -1,28 +1,13 @@
 package csu.RouteGuideBackend.domain.pathfind;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import csu.RouteGuideBackend.domain.member.Member;
 import csu.RouteGuideBackend.domain.member.MemberRepository;
+import csu.RouteGuideBackend.domain.pathfind.dto.RouteRequestDto;
+import csu.RouteGuideBackend.domain.pathfind.dto.RouteResponseDto;
 import csu.RouteGuideBackend.dto.pathfind.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-
-import java.net.URI;
-import java.net.URLEncoder;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -105,7 +90,7 @@ public class PathfindService {
      * @param lon2
      * @return
      */
-    double haversine(double lat1, double lon1, double lat2, double lon2){
+    private double haversine(double lat1, double lon1, double lat2, double lon2){
         // 지구의 반지름(km)
         double R = 6371.0;
         log.info("{},{},{},{}", lat1, lon1, lat2, lon2);
