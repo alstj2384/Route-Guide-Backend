@@ -31,6 +31,7 @@ public class MemberController {
 
     @PostMapping("/member")
     public ResponseEntity<Member> create(@RequestBody MemberJoinDto joinForm){
+        log.info("{}", joinForm.toString());
         Member join = memberService.join(joinForm);
 
         return ResponseEntity.ok().body(join);
