@@ -23,10 +23,9 @@ import java.net.http.HttpResponse;
 @Slf4j
 @RequiredArgsConstructor
 public class TmapRequestService {
-    @Value("${tmap.api.host}")
-    private String TMAP_API_HOST;
     @Value("${tmap.api.key}")
     private String TMAP_API_KEY;
+    private final TmapMakeUriService tmapMakeUriService;
 
     // TODO 이 부분에서 httpclient와 objectMapper를 하나로 관리해도 될까? -> 요청이 여러군데에서 온다면??
     private final HttpClient httpClient = HttpClient.newHttpClient();
@@ -40,23 +39,19 @@ public class TmapRequestService {
      */
     // https://tmap-skopenapi.readme.io/reference/%EC%9E%A5%EC%86%8C%ED%86%B5%ED%95%A9%EA%B2%80%EC%83%89
     public HttpResponse<String> pois(PoisRequestDto dto) throws Exception{
-        log.info("목적지 검색 시작");
+        log.info("pois 호출");
 
-        // URL 설정
-        String uri = TMAP_API_HOST+"/tmap/pois?version=1&searchKeyword="+ URLEncoder.encode(dto.getDestination(), "utf-8") +
-                "&searchType=all&page=1&count=10" +
-                "&reqCoordType=WGS84GEO&resCoordType=WGS84GEO&searchtypCd=R" +
-                "&radius=5&centerLat="+dto.getX()+"&centerLon="+dto.getY()+
-                "&multiPoint=N&poiGroupYn=N";
-
+        // URI 작성
+        String uri = tmapMakeUriService.getUri(TmapUri.POIS, dto);
+        log.info("request uri : {}", uri);
 
         // Request 헤더 작성
-        log.info("request uri : {}", uri);
         HttpRequest request = buildGetHttpRequest(uri);
+        log.info("request : {}", request);
 
         // Request 전송 및 응답 저장
-        log.info("request : {}", request);
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        log.info("response : {}", response);
 
         // 응답 오류여부 체크
         checkError(response);
@@ -73,21 +68,22 @@ public class TmapRequestService {
      */
     // https://tmap-skopenapi.readme.io/reference/%EB%B3%B4%ED%96%89%EC%9E%90-%EA%B2%BD%EB%A1%9C%EC%95%88%EB%82%B4
     public HttpResponse<String> pedestrian(PedestrianRequestDto dto) throws Exception{
-        log.info("길찾기 경로 탐색 시작");
+        log.info("pedestrian 호출");
 
+
+        // URI 설정
+        String uri = tmapMakeUriService.getUri(TmapUri.PEDESTRIAN, dto);
+        log.info("request uri : {}", uri);
+
+
+        // Request 헤더 및 바디 작성
         String requestBody = objectMapper.writeValueAsString(dto);
-        // URL 설정
-        String uri = TMAP_API_HOST+"/tmap/routes/pedestrian?version=1";
-
-        // Request 헤더 작성
         HttpRequest request = buildPostHttpRequest(uri, requestBody);
+        log.info("request : {}", request);
 
         // Request 전송 및 응답 저장
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-        // 잘 받은 거 확인
-        // 이제 파싱하고, 데이터 저장하면 됨
-        log.info("{}", response.body());
+        log.info("response : {}", response);
 
         // 응답 오류여부 체크
         checkError(response);
@@ -99,19 +95,19 @@ public class TmapRequestService {
     // lat = 위도, lon = 경도
     // https://tmap-skopenapi.readme.io/reference/reversegeocoding
     public HttpResponse<String> reverseGeocoding(ReverseGeocodingRequestDto dto) throws Exception{
-        log.info("ReverseGeocoding start");
+        log.info("reverseGeocoding 호출");
 
-        // URL 설정
-        String uri = TMAP_API_HOST+"/tmap/geo/reversegeocoding?version=1&lat="+dto.getLat()+"&lon="+dto.getLon()+"&coordType=WGS84GEO&addressType=A02";
+        // URI 설정
+        String uri = tmapMakeUriService.getUri(TmapUri.REVERSE_GEOCODING, dto);
         log.info("request uri : {}", uri);
-
 
         // Request 헤더 작성
         HttpRequest request = buildGetHttpRequest(uri);
+        log.info("request : {}", request);
 
         // Request 전송 및 응답 저장
-        log.info("request : {}", request);
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        log.info("response : {}", response);
 
 
         // 응답 오류여부 체크
@@ -133,8 +129,12 @@ public class TmapRequestService {
 
 
     private void checkError(HttpResponse<String> response) throws ResponseStatusException{
-        if(response.statusCode() == 401)
+
+        if(response.statusCode() == 401) {
+            log.info("checkError : 권한 없음 예외 발생");
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "TMAP API 요청에 대한 권한이 없습니다");
+        }
+        log.info("checkError : no Error");
     }
 
     private HttpRequest buildGetHttpRequest(String uri){
