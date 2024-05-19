@@ -1,9 +1,9 @@
-package csu.RouteGuideBackend.domain.pathfind.dto;
+package csu.RouteGuideBackend.domain.tmap.dto;
 
 import lombok.Getter;
 
 @Getter
-public class GeocodingRequest {
+public class ReverseGeocodingRequestDto {
     private Long pathfindId;
     private int index;
     private double lat;

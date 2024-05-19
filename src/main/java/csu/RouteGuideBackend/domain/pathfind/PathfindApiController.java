@@ -2,6 +2,8 @@ package csu.RouteGuideBackend.domain.pathfind;
 
 import csu.RouteGuideBackend.config.PrincipalDetails;
 import csu.RouteGuideBackend.domain.pathfind.dto.*;
+import csu.RouteGuideBackend.domain.tmap.dto.ReverseGeocodingRequestDto;
+import csu.RouteGuideBackend.domain.tmap.dto.PedestrianRequestDto;
 import csu.RouteGuideBackend.dto.pathfind.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +33,7 @@ public class PathfindApiController {
     }
 
     @PostMapping("/start")
-    public ResponseEntity<StartPathFindViewDto> startPathFind(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody StartPathFindDto dto) throws Exception{
+    public ResponseEntity<StartPathFindViewDto> startPathFind(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody PedestrianRequestDto dto) throws Exception{
         log.info("길찾기 시작 요청");
         HttpResponse<String> response = pathfindService.startPathfind(dto);
         StartPathFindViewDto startPathFindViewDto = pathfindService.parsePath(principalDetails.getUsername(), response.body());
@@ -65,7 +67,7 @@ public class PathfindApiController {
 
     @PostMapping("/current-location")
     public ResponseEntity<?> reverseGeocoding(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                              @RequestBody GeocodingRequest dto) throws Exception{
+                                              @RequestBody ReverseGeocodingRequestDto dto) throws Exception{
         // 경로 정보 조회
         Pathfind pathfind = pathfindService.findById(dto.getPathfindId());
         checkValidAndThrowException(principalDetails, pathfind.getMember().getEmail());

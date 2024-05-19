@@ -1,11 +1,11 @@
-package csu.RouteGuideBackend.domain.pathfind.dto;
+package csu.RouteGuideBackend.domain.tmap.dto;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class StartPathFindDto {
+public class PedestrianRequestDto {
     private double startX;
     private double startY;
     private double endX;

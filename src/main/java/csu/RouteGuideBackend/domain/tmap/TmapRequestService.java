@@ -1,11 +1,9 @@
 package csu.RouteGuideBackend.domain.tmap;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import csu.RouteGuideBackend.domain.pathfind.Pathfind;
-import csu.RouteGuideBackend.domain.pathfind.Route;
-import csu.RouteGuideBackend.domain.pathfind.dto.GeocodingRequest;
-import csu.RouteGuideBackend.domain.pathfind.dto.GeocodingResponse;
-import csu.RouteGuideBackend.domain.pathfind.dto.StartPathFindDto;
+import csu.RouteGuideBackend.domain.tmap.dto.PoisRequestDto;
+import csu.RouteGuideBackend.domain.tmap.dto.ReverseGeocodingRequestDto;
+import csu.RouteGuideBackend.domain.tmap.dto.PedestrianRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,21 +34,19 @@ public class TmapRequestService {
 
     /**
      * 검색어로 연관된 10개의 목적지를 검색합니다
-     * @param destination : 목적지 이름
-     * @param x : 사용자의 현재 x 좌표 위치
-     * @param y : 사용자의 현재 y 좌표 위치
+     * @param dto PoisRequestDto
      * @return
      * @throws Exception
      */
     // https://tmap-skopenapi.readme.io/reference/%EC%9E%A5%EC%86%8C%ED%86%B5%ED%95%A9%EA%B2%80%EC%83%89
-    public HttpResponse<String> pois(String destination, double x, double y) throws Exception{
+    public HttpResponse<String> pois(PoisRequestDto dto) throws Exception{
         log.info("목적지 검색 시작");
 
         // URL 설정
-        String uri = TMAP_API_HOST+"/tmap/pois?version=1&searchKeyword="+ URLEncoder.encode(destination, "utf-8") +
+        String uri = TMAP_API_HOST+"/tmap/pois?version=1&searchKeyword="+ URLEncoder.encode(dto.getDestination(), "utf-8") +
                 "&searchType=all&page=1&count=10" +
                 "&reqCoordType=WGS84GEO&resCoordType=WGS84GEO&searchtypCd=R" +
-                "&radius=5&centerLat="+x+"&centerLon="+y+
+                "&radius=5&centerLat="+dto.getX()+"&centerLon="+dto.getY()+
                 "&multiPoint=N&poiGroupYn=N";
 
 
@@ -76,7 +72,7 @@ public class TmapRequestService {
      * @throws Exception
      */
     // https://tmap-skopenapi.readme.io/reference/%EB%B3%B4%ED%96%89%EC%9E%90-%EA%B2%BD%EB%A1%9C%EC%95%88%EB%82%B4
-    public HttpResponse<String> pedestrian(StartPathFindDto dto) throws Exception{
+    public HttpResponse<String> pedestrian(PedestrianRequestDto dto) throws Exception{
         log.info("길찾기 경로 탐색 시작");
 
         String requestBody = objectMapper.writeValueAsString(dto);
@@ -102,7 +98,7 @@ public class TmapRequestService {
 
     // lat = 위도, lon = 경도
     // https://tmap-skopenapi.readme.io/reference/reversegeocoding
-    public HttpResponse<String> reverseGeocoding(GeocodingRequest dto) throws Exception{
+    public HttpResponse<String> reverseGeocoding(ReverseGeocodingRequestDto dto) throws Exception{
         log.info("ReverseGeocoding start");
 
         // URL 설정
@@ -120,6 +116,7 @@ public class TmapRequestService {
 
         // 응답 오류여부 체크
         checkError(response);
+        return response;
 
 //        // 응답 정보 파싱
 //        String address = parseGeocoding(response);
