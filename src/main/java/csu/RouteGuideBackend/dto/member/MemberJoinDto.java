@@ -1,4 +1,4 @@
-package csu.RouteGuideBackend.dto;
+package csu.RouteGuideBackend.dto.member;
 
 import csu.RouteGuideBackend.domain.member.Member;
 import lombok.Getter;
