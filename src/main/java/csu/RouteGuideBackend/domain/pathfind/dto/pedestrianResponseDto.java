@@ -7,6 +7,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class StartPathFindViewDto {
+public class pedestrianResponseDto {
     private Long pathfindId;
 }

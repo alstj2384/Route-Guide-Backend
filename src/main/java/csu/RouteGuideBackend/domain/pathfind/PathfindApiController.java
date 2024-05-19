@@ -4,8 +4,8 @@ import csu.RouteGuideBackend.config.PrincipalDetails;
 import csu.RouteGuideBackend.domain.pathfind.dto.*;
 import csu.RouteGuideBackend.domain.tmap.TmapRequestService;
 import csu.RouteGuideBackend.domain.tmap.dto.PoisRequestDto;
-import csu.RouteGuideBackend.domain.tmap.dto.ReverseGeocodingRequestDto;
 import csu.RouteGuideBackend.domain.tmap.dto.PedestrianRequestDto;
+import csu.RouteGuideBackend.domain.tmap.dto.ReverseGeocodingRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -14,7 +14,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.http.HttpResponse;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -36,20 +35,24 @@ public class PathfindApiController {
         return tmapRequestService.pois(dto).body();
     }
 
-//    @PostMapping("/start")
-//    public ResponseEntity<StartPathFindViewDto> startPathFind(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody PedestrianRequestDto dto) throws Exception{
+    @PostMapping("/start")
+//    public ResponseEntity<pedestrianResponseDto> pedestrian(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody PedestrianRequestDto dto) throws Exception{
+    public String pedestrian(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody PedestrianRequestDto dto) throws Exception{
 //        log.info("길찾기 시작 요청");
 //        HttpResponse<String> response = pathfindService.startPathfind(dto);
-//        StartPathFindViewDto startPathFindViewDto = pathfindService.parsePath(principalDetails.getUsername(), response.body());
+//        pedestrianResponseDto startPathFindViewDto = pathfindService.parsePath(principalDetails.getUsername(), response.body());
+//        HttpResponse<String> pedestrian = tmapRequestService.pedestrian(dto);
+        return tmapRequestService.pedestrian(dto).body();
 //        if(startPathFindViewDto == null){
 //            throw new Exception("파싱중 오류 발생");
 //        }
 //
 //        return ResponseEntity.ok().body(startPathFindViewDto);
-//    }
+    }
 //
 //    @PostMapping("/route")
 //    public ResponseEntity<RouteResponseDto> route(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody RouteRequestDto dto){
+//    public RouteResponseDto route(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody RouteRequestDto dto){
 //        log.info("경로 조회 요청");
 //        Pathfind pathfind = pathfindService.findById(dto.getPathfindId());
 //        checkValidAndThrowException(principalDetails, pathfind.getMember().getEmail());
@@ -69,22 +72,24 @@ public class PathfindApiController {
 //        }
 //    }
 //
-//    @PostMapping("/current-location")
+    @PostMapping("/current-location")
 //    public ResponseEntity<?> reverseGeocoding(@AuthenticationPrincipal PrincipalDetails principalDetails,
 //                                              @RequestBody ReverseGeocodingRequestDto dto) throws Exception{
-//        // 경로 정보 조회
+    public String reverseGeocoding(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                @RequestBody ReverseGeocodingRequestDto dto) throws Exception{
+        // 경로 정보 조회
 //        Pathfind pathfind = pathfindService.findById(dto.getPathfindId());
 //        checkValidAndThrowException(principalDetails, pathfind.getMember().getEmail());
-//
-//        // 응답 조회
+        return tmapRequestService.reverseGeocoding(dto).body();
+//         응답 조회
 //        GeocodingResponse geocodingResponse = pathfindService.ReverseGeocoding(dto);
 //
 //
-//        // TODO 컨트롤러 부분에서 데이터 처리할 지 서비스에서 한 번에 묶어서 처리할 지 생각해보기
+//         TODO 컨트롤러 부분에서 데이터 처리할 지 서비스에서 한 번에 묶어서 처리할 지 생각해보기
 //
 //        return ResponseEntity.ok().body(geocodingResponse);
 //        return null;
-//    }
+    }
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> IlliegalArgumentException(IllegalArgumentException ex) {
         // 예외 처리 로직
