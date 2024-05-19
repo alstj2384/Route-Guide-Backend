@@ -32,7 +32,9 @@ public class PathfindApiController {
 //        List<DestinationViewDto> destinationViewDtos = pathfindService.parseDestination(response.body()).orElseThrow(() -> new IllegalArgumentException("검색결과가 존재하지 않습니다!"));
 //        return ResponseEntity.ok().body(destinationViewDtos);
 
-        return tmapRequestService.pois(dto).body();
+        String response = tmapRequestService.pois(dto).body();
+
+        return
     }
 
     @PostMapping("/start")

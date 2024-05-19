@@ -9,7 +9,7 @@ import lombok.ToString;
 @Setter
 @Builder
 @ToString
-public class DestinationViewDto {
+public class PoisResponseDto {
     String name;
     String address;
     double x;
