@@ -3,24 +3,30 @@ package csu.RouteGuideBackend.domain.pathfind.controller;
 import csu.RouteGuideBackend.config.PrincipalDetails;
 import csu.RouteGuideBackend.domain.parse.TmapParseService;
 import csu.RouteGuideBackend.domain.parse.dto.PedestrianDto;
-import csu.RouteGuideBackend.domain.parse.dto.PoisDto;
 import csu.RouteGuideBackend.domain.parse.dto.PoisResponseDto;
 import csu.RouteGuideBackend.domain.pathfind.dto.PedestrianResponseDto;
+import csu.RouteGuideBackend.domain.pathfind.dto.RouteRequestDto;
+import csu.RouteGuideBackend.domain.pathfind.dto.RouteResponseDto;
+import csu.RouteGuideBackend.domain.pathfind.entity.Pathfind;
 import csu.RouteGuideBackend.domain.pathfind.service.PathfindService;
 import csu.RouteGuideBackend.domain.tmap.TmapApi;
 import csu.RouteGuideBackend.domain.tmap.service.TmapRequestService;
-import csu.RouteGuideBackend.domain.tmap.dto.PoisRequestDto;
-import csu.RouteGuideBackend.domain.tmap.dto.PedestrianRequestDto;
-import csu.RouteGuideBackend.domain.tmap.dto.ReverseGeocodingRequestDto;
+import csu.RouteGuideBackend.domain.pathfind.dto.PoisRequestDto;
+import csu.RouteGuideBackend.domain.pathfind.dto.PedestrianRequestDto;
+import csu.RouteGuideBackend.domain.pathfind.dto.ReverseGeocodingRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.net.http.HttpResponse;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,7 +39,7 @@ public class PathfindApiController {
     private final TmapParseService tmapParseService;
 
     @GetMapping("/search")
-    public ResponseEntity<PoisResponseDto> pois(@ModelAttribute PoisRequestDto dto) throws Exception{
+    public ResponseEntity<PoisResponseDto> pois(@ModelAttribute PoisRequestDto dto) throws ParseException, ResponseStatusException, IllegalArgumentException, IOException, InterruptedException{
         log.info("pois");
         PoisResponseDto pois = null;
 
@@ -54,7 +60,9 @@ public class PathfindApiController {
     }
 
     @PostMapping("/start")
-    public ResponseEntity<PedestrianResponseDto> pedestrian(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody PedestrianRequestDto dto) throws Exception{
+    public ResponseEntity<PedestrianResponseDto> pedestrian(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody PedestrianRequestDto dto)
+                                                            throws ResponseStatusException, IOException, IllegalArgumentException, InterruptedException, ParseException{
+
         PedestrianDto pedestrian = null;
         log.info("pedestrian");
 
@@ -79,34 +87,31 @@ public class PathfindApiController {
 
         return ResponseEntity.ok().body(pedestrianResponseDto);
     }
-//
-//    @PostMapping("/route")
-//    public ResponseEntity<RouteResponseDto> route(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody RouteRequestDto dto){
-//    public RouteResponseDto route(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody RouteRequestDto dto){
-//        log.info("경로 조회 요청");
-//        Pathfind pathfind = pathfindService.findById(dto.getPathfindId());
-//        checkValidAndThrowException(principalDetails, pathfind.getMember().getEmail());
-//
-//        RouteResponseDto response = pathfindService.findRoute(dto);
-//
-//        return ResponseEntity.ok().body(response);
-//    }
-//
-//    private boolean valid(PrincipalDetails principalDetails, String userName){
-//        return principalDetails.getUsername().equals(userName);
-//    }
-//
-//    private void checkValidAndThrowException(PrincipalDetails principalDetails, String userName) throws IllegalArgumentException{
-//        if(!valid(principalDetails, userName)){
-//            throw new IllegalArgumentException("요청 정보에 대한 권한이 존재하지 않습니다");
-//        }
-//    }
-//
+
+    @PostMapping("/route")
+    public ResponseEntity<RouteResponseDto> route(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody RouteRequestDto dto){
+        log.info("경로 조회 요청");
+        Pathfind pathfind = pathfindService.findById(dto.getPathfindId());
+
+        // 요청 유효성 검사
+        checkValidAndThrowException(principalDetails, pathfind.getMember().getEmail());
+
+        RouteResponseDto response = pathfindService.findRoute(dto);
+
+        return ResponseEntity.ok().body(response);
+    }
+
+
+
     @PostMapping("/current-location")
-//    public ResponseEntity<?> reverseGeocoding(@AuthenticationPrincipal PrincipalDetails principalDetails,
-//                                              @RequestBody ReverseGeocodingRequestDto dto) throws Exception{
-    public String reverseGeocoding(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                                @RequestBody ReverseGeocodingRequestDto dto) throws Exception{
+    public ResponseEntity<String> reverseGeocoding(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                @RequestBody ReverseGeocodingRequestDto dto) throws ParseException, ResponseStatusException , IOException, IllegalArgumentException, InterruptedException{
+
+        Pathfind pathfind = pathfindService.findById(dto.getPathfindId());
+
+        // 요청 유효성 검사
+        checkValidAndThrowException(principalDetails, pathfind.getMember().getEmail());
+
         String geocoding = null;
         // 경로 정보 조회
         log.info("reverseGeocoding");
@@ -123,15 +128,55 @@ public class PathfindApiController {
             log.info("reverseGeocoding parseResponse : {}", parse);
         }
 
-        // TODO 응답했던 내용을 응답??
-        // 일단은 DTO에 담아서 내려주면 될듯
+        // TODO 응답했던 내용을 DB 기록??
+        String info = pathfindService.currentLocation(geocoding, dto);
 
-
-        return geocoding;
+        return ResponseEntity.ok().body(info);
     }
+
+    private boolean valid(PrincipalDetails principalDetails, String userName){
+        return principalDetails.getUsername().equals(userName);
+    }
+
+    private void checkValidAndThrowException(PrincipalDetails principalDetails, String userName) throws IllegalArgumentException{
+        if(!valid(principalDetails, userName)){
+            throw new IllegalArgumentException("요청 정보에 대한 권한이 존재하지 않습니다");
+        }
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> IlliegalArgumentException(IllegalArgumentException ex) {
+    public ResponseEntity<String> illiegalArgumentException(IllegalArgumentException ex) {
         // 예외 처리 로직
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ParseException.class)
+    public ResponseEntity<String> parseException(ParseException ex) {
+        // 예외 처리 로직
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<String> responseStatusException(ResponseStatusException ex) {
+        // 예외 처리 로직
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity<String> iOException(IOException ex) {
+        // 예외 처리 로직
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(InterruptedException.class)
+    public ResponseEntity<String> interruptedException(InterruptedException ex) {
+        // 예외 처리 로직
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler({AuthenticationException.class, AccessDeniedException.class})
+    public ResponseEntity<String> interruptedException(AuthenticationPrincipal ex) {
+        // 예외 처리 로직
+        return new ResponseEntity<>("인증이 필요합니다", HttpStatus.BAD_REQUEST);
     }
 }

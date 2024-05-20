@@ -5,6 +5,6 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class GeocodingResponse {
+public class GeocodingResponseDto {
     private String description;
 }

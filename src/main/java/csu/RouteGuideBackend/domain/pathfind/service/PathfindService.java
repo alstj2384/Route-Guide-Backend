@@ -11,6 +11,7 @@ import csu.RouteGuideBackend.domain.pathfind.dto.RouteRequestDto;
 import csu.RouteGuideBackend.domain.pathfind.dto.RouteResponseDto;
 import csu.RouteGuideBackend.domain.pathfind.entity.Pathfind;
 import csu.RouteGuideBackend.domain.pathfind.entity.Route;
+import csu.RouteGuideBackend.domain.pathfind.dto.ReverseGeocodingRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -18,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -52,6 +52,7 @@ public class PathfindService {
                     .y(routeDto.getY())
                     .build();
             routes.add(route);
+            routeRepository.save(route);
             log.info("{}", route);
         }
 
@@ -60,11 +61,6 @@ public class PathfindService {
                 .build();
     }
 
-    /**
-     * 현재 위치와 다음 경로의 좌표를 비교하여 다음 경로를 안내합니다
-     * @param dto
-     * @return
-     */
     public RouteResponseDto findRoute(RouteRequestDto dto) {
         // 해당 정보 조회
         Pathfind path = pathfindRepository.findById(dto.getPathfindId()).orElseThrow(() -> new IllegalArgumentException("길찾기 요청 정보가 존재하지 않습니다"));
@@ -109,20 +105,22 @@ public class PathfindService {
         }
     }
 
+    public String currentLocation(String geocoding, ReverseGeocodingRequestDto dto){
+        log.info("currentLocation");
+        Pathfind find = pathfindRepository.findById(dto.getPathfindId()).orElseThrow(() -> new IllegalArgumentException("요청 정보가 존재하지 않습니다"));
+        List<Route> routes = find.getRoutes();
+        Route route = routes.get(dto.getIndex());
+        double distance = haversine(route.getY(), route.getX(), dto.getLat(), dto.getLon());
+
+        return info(geocoding, distance);
+    }
+
 
 
     private String info(String address, double distance){
         return "현재 위치는 " + address + " 이며, 다음 위치까지" + (int)distance + "미터 남았습니다";
     }
 
-    /**
-     * 두 좌표를 바탕으로 거리를 m로 반환합니다
-     * @param lat1
-     * @param lon1
-     * @param lat2
-     * @param lon2
-     * @return
-     */
     private double haversine(double lat1, double lon1, double lat2, double lon2){
         // 지구의 반지름(km)
         double R = 6371.0;
@@ -144,4 +142,5 @@ public class PathfindService {
 
         return distance;
     }
+
 }

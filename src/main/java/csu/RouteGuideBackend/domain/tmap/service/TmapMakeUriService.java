@@ -1,23 +1,22 @@
 package csu.RouteGuideBackend.domain.tmap.service;
 
 import csu.RouteGuideBackend.domain.tmap.TmapUri;
-import csu.RouteGuideBackend.domain.tmap.dto.PoisRequestDto;
-import csu.RouteGuideBackend.domain.tmap.dto.ReverseGeocodingRequestDto;
+import csu.RouteGuideBackend.domain.pathfind.dto.PoisRequestDto;
+import csu.RouteGuideBackend.domain.pathfind.dto.ReverseGeocodingRequestDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 @Service
 @Slf4j
 public class TmapMakeUriService {
-    // TmapParseService와 마찬가지로 TmapUri에 따라서 다른 URI가 생성되도록 하는 곳
-
     @Value("${tmap.api.host}")
     private String TMAP_API_HOST;
 
-    public String getUri(TmapUri type, Object dto) throws Exception{
+    public String getUri(TmapUri type, Object dto) throws UnsupportedEncodingException, IllegalArgumentException{
         String uri = null;
         log.info("TmapMakeUriService 호출");
         switch(type){
@@ -45,7 +44,7 @@ public class TmapMakeUriService {
         return TMAP_API_HOST+"/tmap/geo/reversegeocoding?version=1&lat="+request.getLat()+"&lon="+request.getLon()+"&coordType=WGS84GEO&addressType=A02";
     }
 
-    private String makePoisUri(Object dto) throws Exception{
+    private String makePoisUri(Object dto) throws UnsupportedEncodingException{
         PoisRequestDto request = (PoisRequestDto) dto;
         log.info("makePoisUri 호출");
 

@@ -2,9 +2,9 @@ package csu.RouteGuideBackend.domain.tmap.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import csu.RouteGuideBackend.domain.tmap.TmapUri;
-import csu.RouteGuideBackend.domain.tmap.dto.PoisRequestDto;
-import csu.RouteGuideBackend.domain.tmap.dto.ReverseGeocodingRequestDto;
-import csu.RouteGuideBackend.domain.tmap.dto.PedestrianRequestDto;
+import csu.RouteGuideBackend.domain.pathfind.dto.PoisRequestDto;
+import csu.RouteGuideBackend.domain.pathfind.dto.ReverseGeocodingRequestDto;
+import csu.RouteGuideBackend.domain.pathfind.dto.PedestrianRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -31,14 +32,9 @@ public class TmapRequestService {
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    /**
-     * 검색어로 연관된 10개의 목적지를 검색합니다
-     * @param dto PoisRequestDto
-     * @return
-     * @throws Exception
-     */
+
     // https://tmap-skopenapi.readme.io/reference/%EC%9E%A5%EC%86%8C%ED%86%B5%ED%95%A9%EA%B2%80%EC%83%89
-    public HttpResponse<String> pois(PoisRequestDto dto) throws Exception{
+    public HttpResponse<String> pois(PoisRequestDto dto) throws ResponseStatusException, IllegalArgumentException, IOException, InterruptedException{
         log.info("pois 호출");
 
         // URI 작성
@@ -60,14 +56,8 @@ public class TmapRequestService {
     }
 
 
-    /**
-     * 길 찾기를 시작합니다
-     * @param dto
-     * @return - tmap api 응답
-     * @throws Exception
-     */
     // https://tmap-skopenapi.readme.io/reference/%EB%B3%B4%ED%96%89%EC%9E%90-%EA%B2%BD%EB%A1%9C%EC%95%88%EB%82%B4
-    public HttpResponse<String> pedestrian(PedestrianRequestDto dto) throws Exception{
+    public HttpResponse<String> pedestrian(PedestrianRequestDto dto) throws ResponseStatusException, IOException, IllegalArgumentException, InterruptedException {
         log.info("pedestrian 호출");
 
 
@@ -94,7 +84,7 @@ public class TmapRequestService {
 
     // lat = 위도, lon = 경도
     // https://tmap-skopenapi.readme.io/reference/reversegeocoding
-    public HttpResponse<String> reverseGeocoding(ReverseGeocodingRequestDto dto) throws Exception{
+    public HttpResponse<String> reverseGeocoding(ReverseGeocodingRequestDto dto) throws ResponseStatusException, IOException, IllegalArgumentException, InterruptedException {
         log.info("reverseGeocoding 호출");
 
         // URI 설정
@@ -114,17 +104,6 @@ public class TmapRequestService {
         checkError(response);
         return response;
 
-//        // 응답 정보 파싱
-//        String address = parseGeocoding(response);
-//
-//        // 거리 계산을 위한 객체 받아오기
-//        Pathfind find = pathfindRepository.findById(dto.getPathfindId()).orElseThrow(() -> new IllegalArgumentException("요청 정보가 존재하지 않습니다"));
-//        Route route = find.getRoutes().get(dto.getIndex());
-//
-//        // 거리 계산
-//        double distance = haversine(route.getY(), route.getX(), dto.getLat(), dto.getLon());
-//
-//        return GeocodingResponse.builder().description(info(address, distance)).build();
     }
 
 

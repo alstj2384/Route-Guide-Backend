@@ -1,4 +1,4 @@
-package csu.RouteGuideBackend.domain.tmap.dto;
+package csu.RouteGuideBackend.domain.pathfind.dto;
 
 import lombok.Getter;
 

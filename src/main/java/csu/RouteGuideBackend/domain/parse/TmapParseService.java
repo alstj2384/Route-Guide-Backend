@@ -20,7 +20,7 @@ import java.util.List;
 @Slf4j
 public class TmapParseService {
     // API ENUM에 대한 대표 함수 하나 만들고
-    public Object parseRequest(TmapApi api, String response) throws Exception{
+    public Object parseRequest(TmapApi api, String response) throws ParseException{
         Object result = null;
         switch(api){
             case POIS :
@@ -46,9 +46,7 @@ public class TmapParseService {
         try {
             JSONParser jsonParser = new JSONParser();
             JSONObject json = (JSONObject) jsonParser.parse(response);
-            log.info("json : {}", json.toString());
             JSONObject addressInfo = (JSONObject) json.get("addressInfo");
-            log.info("address info : {}", addressInfo.toString());
 
             address = (String) addressInfo.get("fullAddress");
         } catch(Exception e){
@@ -58,22 +56,8 @@ public class TmapParseService {
         return address;
     }
 
-    /**
-     * 길 찾기 시작 api 응답을 파싱합니다
-     * @param email - 사용자 email
-     * @param response : tmap api로 응답받은 response body
-     * @return
-     * @throws Exception
-     */
     private PedestrianDto pedestrian(String response) throws ParseException{
         log.info("parse pedestrian");
-
-//        Pathfind pathfind = Pathfind.builder()
-//                .member(memberRepository.findByEmail(email).orElse(null))
-//                .routes(new ArrayList<>())
-//                .build();
-//
-//        Pathfind save = pathfindRepository.save(pathfind);
 
         PedestrianDto pedestrianDto = new PedestrianDto();
         List<RouteDto> route = new ArrayList<>();
@@ -93,13 +77,10 @@ public class TmapParseService {
             for (Object feature : features) {
                 JSONObject obj = (JSONObject) feature;
 
-                RouteDto dto = new RouteDto();
-
-//                Route route = new Route();
-//                route.setPathfind(pathfind);
 
                 JSONObject geometry = (JSONObject) obj.get("geometry");
                 JSONArray arr = (JSONArray) geometry.get("coordinates");
+
                 // 단일 좌표인 경우
                 if((geometry.get("type")).toString().equals("Point")){
 
@@ -113,18 +94,17 @@ public class TmapParseService {
 
                 // 좌표가 중복으로 제공되는 경우 넘어가기
                 if(x == prevX && y == prevY) continue;
-                prevX = x;
-                prevY = y;
+                prevX = x; prevY = y;
 
-                dto.setX(x);
-                dto.setY(y);
 
                 JSONObject properties = (JSONObject) obj.get("properties");
-                dto.setDescription(properties.get("description").toString());
+                String description = properties.get("description").toString();
 
-                dto.setIndex(index++);
-                route.add(dto);
-//                routeRepository.save(route);
+                route.add(RouteDto.builder()
+                        .x(x).y(y)
+                        .description(description)
+                        .index(index++)
+                        .build());
             }
         } catch(Exception e){
             throw new ParseException(2);
@@ -133,12 +113,7 @@ public class TmapParseService {
         return pedestrianDto;
     }
 
-    /**
-     * tmap api로 받아온 response를 파싱합니다
-     * @param response tmap api로 응답된 response body
-     * @return List<DestinationViewDto> 목적지 View DTO 리스트
-     */
-    // 검색 결과 파싱
+
     private PoisResponseDto pois(String response) throws ParseException{
         log.info("parse pois");
         // 응답 정보 파싱
