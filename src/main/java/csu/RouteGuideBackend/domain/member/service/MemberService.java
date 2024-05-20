@@ -10,6 +10,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -21,9 +23,11 @@ public class MemberService {
     public Member join(MemberJoinDto dto){
         Member entity = MemberJoinDto.toEntity(dto, passwordEncoder);
 
-        memberRepository.findByEmail(entity.getEmail()).ifPresent(a -> {
-            throw new IllegalArgumentException("해당 이메일의 사용자가 이미 존재합니다");
-        });
+        Optional<Member> member = memberRepository.findByEmail(entity.getEmail());
+
+        if(member.isPresent())
+            throw new IllegalArgumentException("해당 이메일 사용자가 이미 존재합니다");
+
         return memberRepository.save(entity);
     }
 
@@ -36,15 +40,15 @@ public class MemberService {
         return memberRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("findById : 회원 조회 실패"));
     }
 
-    public Member delete(int id) {
-        Member target = findById(id);
+    public Member delete(String email) {
+        Member target = findByEmail(email);
         memberRepository.delete(target);
         return target;
     }
 
 
-    public Member patch(int id, MemberEditDto dto) {
-        Member target = findById(id);
+    public Member patch(String email, MemberEditDto dto) {
+        Member target = findByEmail(email);
         Member entity = MemberEditDto.toEntity(target, dto, passwordEncoder);
         memberRepository.save(entity);
         return entity;

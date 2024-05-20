@@ -19,9 +19,6 @@ public class PrincipalDetails implements UserDetails {
         this.member = member;
     }
 
-
-
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> collect = new ArrayList<>();
