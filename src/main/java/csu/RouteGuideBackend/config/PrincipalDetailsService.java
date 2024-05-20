@@ -1,7 +1,7 @@
 package csu.RouteGuideBackend.config;
 
-import csu.RouteGuideBackend.domain.member.Member;
-import csu.RouteGuideBackend.domain.member.MemberRepository;
+import csu.RouteGuideBackend.domain.member.entity.Member;
+import csu.RouteGuideBackend.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
