@@ -1,5 +1,6 @@
-package csu.RouteGuideBackend.domain.member;
+package csu.RouteGuideBackend.domain.member.repository;
 
+import csu.RouteGuideBackend.domain.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

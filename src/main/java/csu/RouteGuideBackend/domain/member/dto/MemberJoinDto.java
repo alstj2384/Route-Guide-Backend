@@ -1,12 +1,14 @@
-package csu.RouteGuideBackend.dto;
+package csu.RouteGuideBackend.domain.member.dto;
 
-import csu.RouteGuideBackend.domain.member.Member;
+import csu.RouteGuideBackend.domain.member.entity.Member;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Getter
 @Setter
+@ToString
 public class MemberJoinDto {
 
     private String email;

@@ -1,8 +1,10 @@
-package csu.RouteGuideBackend.domain.member;
+package csu.RouteGuideBackend.domain.member.controller;
 
 import csu.RouteGuideBackend.config.PrincipalDetails;
-import csu.RouteGuideBackend.dto.MemberEditDto;
-import csu.RouteGuideBackend.dto.MemberJoinDto;
+import csu.RouteGuideBackend.domain.member.service.MemberService;
+import csu.RouteGuideBackend.domain.member.dto.MemberEditDto;
+import csu.RouteGuideBackend.domain.member.dto.MemberJoinDto;
+import csu.RouteGuideBackend.domain.member.entity.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -31,6 +33,7 @@ public class MemberController {
 
     @PostMapping("/member")
     public ResponseEntity<Member> create(@RequestBody MemberJoinDto joinForm){
+        log.info("{}", joinForm.toString());
         Member join = memberService.join(joinForm);
 
         return ResponseEntity.ok().body(join);
