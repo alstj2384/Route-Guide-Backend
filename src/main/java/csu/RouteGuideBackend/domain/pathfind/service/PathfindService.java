@@ -1,6 +1,10 @@
 package csu.RouteGuideBackend.domain.pathfind.service;
 
+import csu.RouteGuideBackend.domain.member.entity.Member;
 import csu.RouteGuideBackend.domain.member.repository.MemberRepository;
+import csu.RouteGuideBackend.domain.parse.dto.PedestrianDto;
+import csu.RouteGuideBackend.domain.parse.dto.RouteDto;
+import csu.RouteGuideBackend.domain.pathfind.dto.PedestrianResponseDto;
 import csu.RouteGuideBackend.domain.pathfind.repository.PathfindRepository;
 import csu.RouteGuideBackend.domain.pathfind.repository.RouteRepository;
 import csu.RouteGuideBackend.domain.pathfind.dto.RouteRequestDto;
@@ -9,18 +13,17 @@ import csu.RouteGuideBackend.domain.pathfind.entity.Pathfind;
 import csu.RouteGuideBackend.domain.pathfind.entity.Route;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class PathfindService {
-
-    @Value("${tmap.api.host}")
-    private String TMAP_API_HOST;
-    @Value("${tmap.api.key}")
-    private String TMAP_API_KEY;
 
     private final PathfindRepository pathfindRepository;
     private final RouteRepository routeRepository;
@@ -28,6 +31,33 @@ public class PathfindService {
 
     public Pathfind findById(Long id){
         return pathfindRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("요청 회원이 존재하지 않습니다"));
+    }
+
+    public PedestrianResponseDto updatePedestrian(String email, PedestrianDto dto){
+        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("요청 회원이 존재하지 않습니다"));
+        List<Route> routes = new ArrayList<>();
+        Pathfind pathfind = Pathfind.builder()
+                .member(member)
+                .routes(routes)
+                .build();
+        Pathfind save = pathfindRepository.save(pathfind);
+
+
+        for (RouteDto routeDto : dto.getRoute()) {
+            Route route = Route.builder()
+                    .index(routeDto.getIndex())
+                    .description(routeDto.getDescription())
+                    .pathfind(pathfind)
+                    .x(routeDto.getX())
+                    .y(routeDto.getY())
+                    .build();
+            routes.add(route);
+            log.info("{}", route);
+        }
+
+        return PedestrianResponseDto.builder()
+                .pathfindId(save.getId())
+                .build();
     }
 
     /**
@@ -81,7 +111,7 @@ public class PathfindService {
 
 
 
-    public String info(String address, double distance){
+    private String info(String address, double distance){
         return "현재 위치는 " + address + " 이며, 다음 위치까지" + (int)distance + "미터 남았습니다";
     }
 

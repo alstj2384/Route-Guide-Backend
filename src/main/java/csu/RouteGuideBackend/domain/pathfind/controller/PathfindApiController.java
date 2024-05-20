@@ -5,6 +5,7 @@ import csu.RouteGuideBackend.domain.parse.TmapParseService;
 import csu.RouteGuideBackend.domain.parse.dto.PedestrianDto;
 import csu.RouteGuideBackend.domain.parse.dto.PoisDto;
 import csu.RouteGuideBackend.domain.parse.dto.PoisResponseDto;
+import csu.RouteGuideBackend.domain.pathfind.dto.PedestrianResponseDto;
 import csu.RouteGuideBackend.domain.pathfind.service.PathfindService;
 import csu.RouteGuideBackend.domain.tmap.TmapApi;
 import csu.RouteGuideBackend.domain.tmap.service.TmapRequestService;
@@ -32,8 +33,7 @@ public class PathfindApiController {
     private final TmapParseService tmapParseService;
 
     @GetMapping("/search")
-    public PoisResponseDto pois(@ModelAttribute PoisRequestDto dto) throws Exception{
-//    public ResponseEntity<List<DestinationViewDto>> pois(@RequestParam PoisRequestDto dto) throws Exception{
+    public ResponseEntity<PoisResponseDto> pois(@ModelAttribute PoisRequestDto dto) throws Exception{
         log.info("pois");
         PoisResponseDto pois = null;
 
@@ -50,12 +50,11 @@ public class PathfindApiController {
             log.info("pois parseResponse : {}", parse);
         }
 
-        return pois;
+        return ResponseEntity.ok().body(pois);
     }
 
     @PostMapping("/start")
-//    public ResponseEntity<pedestrianResponseDto> pedestrian(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody PedestrianRequestDto dto) throws Exception{
-    public PedestrianDto pedestrian(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody PedestrianRequestDto dto) throws Exception{
+    public ResponseEntity<PedestrianResponseDto> pedestrian(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody PedestrianRequestDto dto) throws Exception{
         PedestrianDto pedestrian = null;
         log.info("pedestrian");
 
@@ -71,7 +70,14 @@ public class PathfindApiController {
             pedestrian = (PedestrianDto) parse;
             log.info("pedestrian parseResponse : {}", parse);
         }
-        return pedestrian;
+
+        // TODO parsing된 내용을 repository에 update
+        String email = principalDetails.getUsername();
+
+        PedestrianResponseDto pedestrianResponseDto = pathfindService.updatePedestrian(email, pedestrian);
+        // 최종적으로 pathfindId 반환
+
+        return ResponseEntity.ok().body(pedestrianResponseDto);
     }
 //
 //    @PostMapping("/route")
@@ -103,8 +109,6 @@ public class PathfindApiController {
                                                 @RequestBody ReverseGeocodingRequestDto dto) throws Exception{
         String geocoding = null;
         // 경로 정보 조회
-//        Pathfind pathfind = pathfindService.findById(dto.getPathfindId());
-//        checkValidAndThrowException(principalDetails, pathfind.getMember().getEmail());
         log.info("reverseGeocoding");
         // 좌표 정보로 현재 위치 조회 API 요청
         HttpResponse<String> response = tmapRequestService.reverseGeocoding(dto);
@@ -119,16 +123,11 @@ public class PathfindApiController {
             log.info("reverseGeocoding parseResponse : {}", parse);
         }
 
+        // TODO 응답했던 내용을 응답??
+        // 일단은 DTO에 담아서 내려주면 될듯
+
 
         return geocoding;
-//         응답 조회
-//        GeocodingResponse geocodingResponse = pathfindService.ReverseGeocoding(dto);
-//
-//
-//         TODO 컨트롤러 부분에서 데이터 처리할 지 서비스에서 한 번에 묶어서 처리할 지 생각해보기
-//
-//        return ResponseEntity.ok().body(geocodingResponse);
-//        return null;
     }
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> IlliegalArgumentException(IllegalArgumentException ex) {
