@@ -1,5 +1,6 @@
 package csu.RouteGuideBackend.domain.parse;
 
+import csu.RouteGuideBackend.domain.parse.dto.RouteDto;
 import csu.RouteGuideBackend.domain.pathfind.entity.Pathfind;
 import csu.RouteGuideBackend.domain.pathfind.entity.Route;
 import csu.RouteGuideBackend.domain.pathfind.dto.PedestrianResponseDto;
@@ -20,26 +21,30 @@ import java.util.List;
 @Slf4j
 public class TmapParseService {
     // API ENUM에 대한 대표 함수 하나 만들고
-    public ParseTmapResponse parseRequest(TmapApi api, String response){
+    public Object parseRequest(TmapApi api, String response) throws Exception{
         Object result = null;
         switch(api){
-            case POIS : result = pois(response)
+            case POIS :
+                result = pois(response);
+                break;
             case PEDESTRIAN :
+                result = pedestrian(response);
+                break;
             case REVERSE_GEOCODING:
-
+                result = parseGeocoding(response);
+                break;
         }
+        return result;
     }
+
     public String parseGeocoding(String response) throws ParseException {
         log.info("parse Geocoding Response");
 
-        log.info("{}", response.body());
-
-        String body = response.body();
         String address = null;
         // 응답 정보 파싱
         try {
             JSONParser jsonParser = new JSONParser();
-            JSONObject json = (JSONObject) jsonParser.parse(body);
+            JSONObject json = (JSONObject) jsonParser.parse(response);
             log.info("json : {}", json.toString());
             JSONObject addressInfo = (JSONObject) json.get("addressInfo");
             log.info("address info : {}", addressInfo.toString());
@@ -59,16 +64,21 @@ public class TmapParseService {
      * @return
      * @throws Exception
      */
-    public PedestrianResponseDto parsePath(String email, String response) throws Exception{
-        Pathfind pathfind = Pathfind.builder()
-                .member(memberRepository.findByEmail(email).orElse(null))
-                .routes(new ArrayList<>())
-                .build();
+    public List<RouteDto> pedestrian(String response) throws ParseException{
+        log.info("parse pedestrian");
 
-        Pathfind save = pathfindRepository.save(pathfind);
+//        Pathfind pathfind = Pathfind.builder()
+//                .member(memberRepository.findByEmail(email).orElse(null))
+//                .routes(new ArrayList<>())
+//                .build();
+//
+//        Pathfind save = pathfindRepository.save(pathfind);
 
+        List<RouteDto> route = new ArrayList<>();
         double prevX = 0;
         double prevY = 0;
+        double x = 0;
+        double y = 0;
         int index = 0;
 
         try {
@@ -79,38 +89,44 @@ public class TmapParseService {
             for (Object feature : features) {
                 JSONObject obj = (JSONObject) feature;
 
-                Route route = new Route();
-                route.setPathfind(pathfind);
+                RouteDto dto = new RouteDto();
+
+//                Route route = new Route();
+//                route.setPathfind(pathfind);
 
                 JSONObject geometry = (JSONObject) obj.get("geometry");
                 JSONArray arr = (JSONArray) geometry.get("coordinates");
                 // 단일 좌표인 경우
                 if((geometry.get("type")).toString().equals("Point")){
-                    route.setX(Double.parseDouble(arr.get(0).toString()));
-                    route.setY(Double.parseDouble(arr.get(1).toString()));
+
+                    x = Double.parseDouble(arr.get(0).toString());
+                    y = Double.parseDouble(arr.get(1).toString());
                 } else{
                     JSONArray coor = (JSONArray) arr.get(0);
-                    route.setX(Double.parseDouble(coor.get(0).toString()));
-                    route.setY(Double.parseDouble(coor.get(1).toString()));
+                    x = Double.parseDouble(coor.get(0).toString());
+                    y = Double.parseDouble(coor.get(1).toString());
                 }
 
                 // 좌표가 중복으로 제공되는 경우 넘어가기
-                if(route.getX() == prevX && route.getY() == prevY) continue;
-                prevX = route.getX();
-                prevY = route.getY();
+                if(x == prevX && y == prevY) continue;
+                prevX = x;
+                prevY = y;
+
+                dto.setX(x);
+                dto.setY(y);
 
                 JSONObject properties = (JSONObject) obj.get("properties");
-                route.setDescription(properties.get("description").toString());
+                dto.setDescription(properties.get("description").toString());
 
-                route.setIndex(index++);
-                pathfind.getRoutes().add(route);
-                routeRepository.save(route);
+                dto.setIndex(index++);
+                route.add(dto);
+//                routeRepository.save(route);
             }
         } catch(Exception e){
-            return null;
+            throw new ParseException(2);
         }
 
-        return new StartPathFindViewDto(save.getId());
+        return route;
     }
 
     /**
@@ -119,7 +135,8 @@ public class TmapParseService {
      * @return List<DestinationViewDto> 목적지 View DTO 리스트
      */
     // 검색 결과 파싱
-    public List<PoisResponseDto> pois(String response){
+    public List<PoisResponseDto> pois(String response) throws ParseException{
+        log.info("parse pois");
         // 응답 정보 파싱
         List<PoisResponseDto> destinationViewList = new ArrayList<>();
         try {
@@ -145,7 +162,7 @@ public class TmapParseService {
                                 .build());
             }
         } catch(Exception e){
-            return null;
+            throw new ParseException(2);
         }
         return destinationViewList;
     }
