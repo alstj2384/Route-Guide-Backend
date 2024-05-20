@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.http.HttpResponse;
 import java.util.List;
 
 @RestController
@@ -33,37 +34,44 @@ public class PathfindApiController {
     @GetMapping("/search")
     public PoisResponseDto pois(@ModelAttribute PoisRequestDto dto) throws Exception{
 //    public ResponseEntity<List<DestinationViewDto>> pois(@RequestParam PoisRequestDto dto) throws Exception{
-        log.info("목적지 검색");
-//        HttpResponse<String> response = pathfindService.searchDestination(destination, x, y);
-//        List<DestinationViewDto> destinationViewDtos = pathfindService.parseDestination(response.body()).orElseThrow(() -> new IllegalArgumentException("검색결과가 존재하지 않습니다!"));
-//        return ResponseEntity.ok().body(destinationViewDtos);
+        log.info("pois");
         PoisResponseDto pois = null;
-        String response = tmapRequestService.pois(dto).body();
-        Object parse = tmapParseService.parseRequest(TmapApi.POIS, response);
-        if(parse instanceof PoisResponseDto)
+
+        // 목적지 검색 API 요청
+        HttpResponse<String> response = tmapRequestService.pois(dto);
+        log.info("pois HttpResponse : {}", response);
+
+        // 응답 내용 파싱
+        Object parse = tmapParseService.parseRequest(TmapApi.POIS, response.body());
+
+        // 타입 유효성 검사
+        if(parse instanceof PoisResponseDto) {
             pois = (PoisResponseDto) parse;
+            log.info("pois parseResponse : {}", parse);
+        }
+
         return pois;
     }
 
     @PostMapping("/start")
 //    public ResponseEntity<pedestrianResponseDto> pedestrian(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody PedestrianRequestDto dto) throws Exception{
     public PedestrianDto pedestrian(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody PedestrianRequestDto dto) throws Exception{
-//        log.info("길찾기 시작 요청");
-//        HttpResponse<String> response = pathfindService.startPathfind(dto);
-//        pedestrianResponseDto startPathFindViewDto = pathfindService.parsePath(principalDetails.getUsername(), response.body());
-//        HttpResponse<String> pedestrian = tmapRequestService.pedestrian(dto);
         PedestrianDto pedestrian = null;
-        String response = tmapRequestService.pedestrian(dto).body();
-        Object parse = tmapParseService.parseRequest(TmapApi.PEDESTRIAN, response);
+        log.info("pedestrian");
+
+        // 보행자 길찾기 API 요청
+        HttpResponse<String> response = tmapRequestService.pedestrian(dto);
+        log.info("pedestrian HttpResponse : {}", response);
+
+        // 응답 내용 파싱
+        Object parse = tmapParseService.parseRequest(TmapApi.PEDESTRIAN, response.body());
+
+        // 리턴 타입 검사
         if(parse instanceof PedestrianDto){
             pedestrian = (PedestrianDto) parse;
+            log.info("pedestrian parseResponse : {}", parse);
         }
         return pedestrian;
-//        if(startPathFindViewDto == null){
-//            throw new Exception("파싱중 오류 발생");
-//        }
-//
-//        return ResponseEntity.ok().body(startPathFindViewDto);
     }
 //
 //    @PostMapping("/route")
@@ -97,10 +105,19 @@ public class PathfindApiController {
         // 경로 정보 조회
 //        Pathfind pathfind = pathfindService.findById(dto.getPathfindId());
 //        checkValidAndThrowException(principalDetails, pathfind.getMember().getEmail());
-        String response = tmapRequestService.reverseGeocoding(dto).body();
-        Object parse = tmapParseService.parseRequest(TmapApi.REVERSE_GEOCODING, response);
-        if(parse instanceof String)
+        log.info("reverseGeocoding");
+        // 좌표 정보로 현재 위치 조회 API 요청
+        HttpResponse<String> response = tmapRequestService.reverseGeocoding(dto);
+        log.info("reverseGeocoding HttpResponse : {}", response);
+
+        // 응답 정보 파싱
+        Object parse = tmapParseService.parseRequest(TmapApi.REVERSE_GEOCODING, response.body());
+
+        // 타입 유효성 검사
+        if(parse instanceof String) {
             geocoding = (String) parse;
+            log.info("reverseGeocoding parseResponse : {}", parse);
+        }
 
 
         return geocoding;
