@@ -1,10 +1,12 @@
-package csu.RouteGuideBackend.domain.relationship;
+package csu.RouteGuideBackend.domain.relationship.controller;
 
 import csu.RouteGuideBackend.config.PrincipalDetails;
-import csu.RouteGuideBackend.domain.member.Member;
-import csu.RouteGuideBackend.domain.member.MemberService;
+import csu.RouteGuideBackend.domain.member.entity.Member;
+import csu.RouteGuideBackend.domain.member.service.MemberService;
+import csu.RouteGuideBackend.domain.relationship.service.RelationshipService;
 import csu.RouteGuideBackend.domain.relationship.dto.ViewRelationshipDto;
 import csu.RouteGuideBackend.domain.relationship.dto.WaitingRelationshipDto;
+import csu.RouteGuideBackend.domain.relationship.entity.Relationship;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

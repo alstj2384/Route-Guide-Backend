@@ -1,6 +1,6 @@
-package csu.RouteGuideBackend.domain.pathfind;
+package csu.RouteGuideBackend.domain.pathfind.entity;
 
-import csu.RouteGuideBackend.domain.member.Member;
+import csu.RouteGuideBackend.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.*;
 

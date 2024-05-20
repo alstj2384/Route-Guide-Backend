@@ -1,5 +1,6 @@
-package csu.RouteGuideBackend.domain.relationship;
+package csu.RouteGuideBackend.domain.relationship.repository;
 
+import csu.RouteGuideBackend.domain.relationship.entity.Relationship;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

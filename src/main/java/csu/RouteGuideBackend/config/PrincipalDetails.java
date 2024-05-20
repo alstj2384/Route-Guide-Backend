@@ -1,6 +1,6 @@
 package csu.RouteGuideBackend.config;
 
-import csu.RouteGuideBackend.domain.member.Member;
+import csu.RouteGuideBackend.domain.member.entity.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

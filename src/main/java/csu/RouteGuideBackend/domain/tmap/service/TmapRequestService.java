@@ -1,6 +1,7 @@
-package csu.RouteGuideBackend.domain.tmap;
+package csu.RouteGuideBackend.domain.tmap.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import csu.RouteGuideBackend.domain.tmap.TmapUri;
 import csu.RouteGuideBackend.domain.tmap.dto.PoisRequestDto;
 import csu.RouteGuideBackend.domain.tmap.dto.ReverseGeocodingRequestDto;
 import csu.RouteGuideBackend.domain.tmap.dto.PedestrianRequestDto;
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.net.URI;
-import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;

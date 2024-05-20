@@ -1,8 +1,12 @@
-package csu.RouteGuideBackend.domain.pathfind;
+package csu.RouteGuideBackend.domain.pathfind.service;
 
-import csu.RouteGuideBackend.domain.member.MemberRepository;
+import csu.RouteGuideBackend.domain.member.repository.MemberRepository;
+import csu.RouteGuideBackend.domain.pathfind.repository.PathfindRepository;
+import csu.RouteGuideBackend.domain.pathfind.repository.RouteRepository;
 import csu.RouteGuideBackend.domain.pathfind.dto.RouteRequestDto;
 import csu.RouteGuideBackend.domain.pathfind.dto.RouteResponseDto;
+import csu.RouteGuideBackend.domain.pathfind.entity.Pathfind;
+import csu.RouteGuideBackend.domain.pathfind.entity.Route;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

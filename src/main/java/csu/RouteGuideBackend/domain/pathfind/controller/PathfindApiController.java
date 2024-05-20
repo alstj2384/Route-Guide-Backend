@@ -1,8 +1,8 @@
-package csu.RouteGuideBackend.domain.pathfind;
+package csu.RouteGuideBackend.domain.pathfind.controller;
 
 import csu.RouteGuideBackend.config.PrincipalDetails;
-import csu.RouteGuideBackend.domain.pathfind.dto.*;
-import csu.RouteGuideBackend.domain.tmap.TmapRequestService;
+import csu.RouteGuideBackend.domain.pathfind.service.PathfindService;
+import csu.RouteGuideBackend.domain.tmap.service.TmapRequestService;
 import csu.RouteGuideBackend.domain.tmap.dto.PoisRequestDto;
 import csu.RouteGuideBackend.domain.tmap.dto.PedestrianRequestDto;
 import csu.RouteGuideBackend.domain.tmap.dto.ReverseGeocodingRequestDto;
@@ -12,8 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.http.HttpResponse;
 
 @RestController
 @RequiredArgsConstructor

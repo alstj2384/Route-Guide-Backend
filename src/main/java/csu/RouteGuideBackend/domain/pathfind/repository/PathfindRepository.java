@@ -1,5 +1,6 @@
-package csu.RouteGuideBackend.domain.pathfind;
+package csu.RouteGuideBackend.domain.pathfind.repository;
 
+import csu.RouteGuideBackend.domain.pathfind.entity.Pathfind;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

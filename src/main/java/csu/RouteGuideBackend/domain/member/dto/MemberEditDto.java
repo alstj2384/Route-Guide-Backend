@@ -1,6 +1,6 @@
 package csu.RouteGuideBackend.domain.member.dto;
 
-import csu.RouteGuideBackend.domain.member.Member;
+import csu.RouteGuideBackend.domain.member.entity.Member;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.crypto.password.PasswordEncoder;

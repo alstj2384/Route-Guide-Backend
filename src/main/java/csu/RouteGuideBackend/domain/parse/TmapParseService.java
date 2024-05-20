@@ -1,7 +1,7 @@
 package csu.RouteGuideBackend.domain.parse;
 
-import csu.RouteGuideBackend.domain.pathfind.Pathfind;
-import csu.RouteGuideBackend.domain.pathfind.Route;
+import csu.RouteGuideBackend.domain.pathfind.entity.Pathfind;
+import csu.RouteGuideBackend.domain.pathfind.entity.Route;
 import csu.RouteGuideBackend.domain.pathfind.dto.PedestrianResponseDto;
 import csu.RouteGuideBackend.domain.tmap.TmapApi;
 import csu.RouteGuideBackend.domain.parse.dto.ParseTmapResponse;

@@ -1,6 +1,6 @@
-package csu.RouteGuideBackend.domain.member;
+package csu.RouteGuideBackend.domain.member.entity;
 
-import csu.RouteGuideBackend.domain.relationship.Relationship;
+import csu.RouteGuideBackend.domain.relationship.entity.Relationship;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;

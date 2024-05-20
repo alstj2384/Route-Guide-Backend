@@ -1,5 +1,6 @@
-package csu.RouteGuideBackend.domain.tmap;
+package csu.RouteGuideBackend.domain.tmap.service;
 
+import csu.RouteGuideBackend.domain.tmap.TmapUri;
 import csu.RouteGuideBackend.domain.tmap.dto.PoisRequestDto;
 import csu.RouteGuideBackend.domain.tmap.dto.ReverseGeocodingRequestDto;
 import lombok.extern.slf4j.Slf4j;

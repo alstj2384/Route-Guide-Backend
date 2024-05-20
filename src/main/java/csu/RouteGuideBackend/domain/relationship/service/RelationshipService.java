@@ -1,9 +1,12 @@
-package csu.RouteGuideBackend.domain.relationship;
+package csu.RouteGuideBackend.domain.relationship.service;
 
-import csu.RouteGuideBackend.domain.member.Member;
-import csu.RouteGuideBackend.domain.member.MemberRepository;
+import csu.RouteGuideBackend.domain.member.entity.Member;
+import csu.RouteGuideBackend.domain.member.repository.MemberRepository;
+import csu.RouteGuideBackend.domain.relationship.RelationshipStatus;
 import csu.RouteGuideBackend.domain.relationship.dto.ViewRelationshipDto;
 import csu.RouteGuideBackend.domain.relationship.dto.WaitingRelationshipDto;
+import csu.RouteGuideBackend.domain.relationship.entity.Relationship;
+import csu.RouteGuideBackend.domain.relationship.repository.RelationshipRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
