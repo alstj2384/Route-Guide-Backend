@@ -1,6 +1,7 @@
 package csu.RouteGuideBackend.domain.member.controller;
 
 import csu.RouteGuideBackend.config.PrincipalDetails;
+import csu.RouteGuideBackend.domain.member.dto.MemberViewDto;
 import csu.RouteGuideBackend.domain.member.service.MemberService;
 import csu.RouteGuideBackend.domain.member.dto.MemberEditDto;
 import csu.RouteGuideBackend.domain.member.dto.MemberJoinDto;
@@ -10,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
@@ -21,51 +23,72 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    @GetMapping("/member/{id}")
-    public ResponseEntity<Member> get(@PathVariable int id, @AuthenticationPrincipal PrincipalDetails principalDetails){
-        log.info("id {}번 회원 검색", id);
-        if(isValidMember(principalDetails, id)){
-            return ResponseEntity.ok().body(memberService.findById(id));
-        }
-        log.info("회원을 찾을 수 없습니다!");
-        return ResponseEntity.badRequest().body(null);
+    @GetMapping("/member/{email}")
+    public ResponseEntity<MemberViewDto> get(@PathVariable String email, @AuthenticationPrincipal PrincipalDetails principalDetails){
+        log.info("{} 회원 조회 요청", email);
+
+        // 요청 검증
+        valid(principalDetails, email);
+
+        // 멤버 조회
+        Member member = memberService.findByEmail(email);
+
+        // DTO 변환
+        MemberViewDto dto = MemberViewDto.toDto(member);
+
+        return ResponseEntity.ok().body(dto);
     }
 
     @PostMapping("/member")
-    public ResponseEntity<Member> create(@RequestBody MemberJoinDto joinForm){
-        log.info("{}", joinForm.toString());
+    public ResponseEntity<MemberViewDto> create(@RequestBody MemberJoinDto joinForm){
+        log.info("{} 회원 생성 요청", joinForm.toString());
         Member join = memberService.join(joinForm);
 
-        return ResponseEntity.ok().body(join);
+        MemberViewDto dto = MemberViewDto.toDto(join);
+        return ResponseEntity.ok().body(dto);
     }
 
-    @DeleteMapping("/member/{id}")
-    public ResponseEntity<Member> delete(@PathVariable int id, @AuthenticationPrincipal PrincipalDetails principalDetails){
-        if(isValidMember(principalDetails, id)){
-            return ResponseEntity.ok(memberService.delete(id));
-        }
-        return ResponseEntity.badRequest().body(null);
+    @DeleteMapping("/member/{email}")
+    public ResponseEntity<MemberViewDto> delete(@PathVariable String email, @AuthenticationPrincipal PrincipalDetails principalDetails){
+        log.info("{} 회원 삭제 요청", email);
+        valid(principalDetails, email);
+
+        Member delete = memberService.delete(email);
+        MemberViewDto deleted = MemberViewDto.toDto(delete);
+
+        return ResponseEntity.ok().body(deleted);
     }
 
-    @PatchMapping("/member/{id}")
-    public ResponseEntity<Member> patch(@PathVariable int id, @AuthenticationPrincipal PrincipalDetails principalDetails
+    @PatchMapping("/member/{email}")
+    public ResponseEntity<MemberViewDto> patch(@PathVariable String email, @AuthenticationPrincipal PrincipalDetails principalDetails
             ,@RequestBody MemberEditDto dto ){
-        if(isValidMember(principalDetails, id)){
-            Member patch = memberService.patch(id, dto);
-            return ResponseEntity.ok(patch);
-        }
-        return ResponseEntity.badRequest().body(null);
+        valid(principalDetails, email);
+
+        Member patch = memberService.patch(email, dto);
+        MemberViewDto patched = MemberViewDto.toDto(patch);
+        return ResponseEntity.ok().body(patched);
     }
 
 
-    private boolean isValidMember(PrincipalDetails principalDetails, int id){
-        log.info("id {} 회원 검증", id);
-        return memberService.findByEmail(principalDetails.getUsername()).getId() == id;
+    private void valid(PrincipalDetails principalDetails, String email){
+        log.info("{} 회원 검증", email);
+        if(!principalDetails.getUsername().equals(email)){
+            log.info("회원 조회 불가");
+            throw new IllegalArgumentException("요청 정보가 토큰과 일치하지 않습니다");
+        }
+        log.info("회원 검증 완료");
     }
 
     @ExceptionHandler(SQLException.class)
     public ResponseEntity<String> handleDataAccessException(SQLException ex) {
         // 예외 처리 로직
-        return new ResponseEntity<>("데이터베이스 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> illegalArgumentException(IllegalArgumentException ex) {
+        // 예외 처리 로직
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
 }
