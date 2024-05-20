@@ -75,7 +75,7 @@ public class MemberController {
         log.info("{} 회원 검증", email);
         if(principalDetails == null){
             log.info("토큰 조회 불가");
-            throw new IllegalArgumentException("요청 정보가 존재하지 않습니다[토큰]");
+            throw new IllegalArgumentException("요청 토큰이 유효하지 않습니다");
         }
         if(!principalDetails.getUsername().equals(email)){
             log.info("회원 조회 불가");
