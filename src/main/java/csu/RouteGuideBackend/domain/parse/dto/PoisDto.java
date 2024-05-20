@@ -1,4 +1,4 @@
-package csu.RouteGuideBackend.domain.pathfind.dto;
+package csu.RouteGuideBackend.domain.parse.dto;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.ToString;
 @Setter
 @Builder
 @ToString
-public class PoisResponseDto {
+public class PoisDto {
     String name;
     String address;
     double x;

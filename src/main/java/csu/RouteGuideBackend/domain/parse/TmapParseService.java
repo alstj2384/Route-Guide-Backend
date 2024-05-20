@@ -1,17 +1,16 @@
 package csu.RouteGuideBackend.domain.parse;
 
+import csu.RouteGuideBackend.domain.parse.dto.PedestrianDto;
+import csu.RouteGuideBackend.domain.parse.dto.PoisResponseDto;
 import csu.RouteGuideBackend.domain.parse.dto.RouteDto;
-import csu.RouteGuideBackend.domain.pathfind.entity.Pathfind;
-import csu.RouteGuideBackend.domain.pathfind.entity.Route;
-import csu.RouteGuideBackend.domain.pathfind.dto.PedestrianResponseDto;
 import csu.RouteGuideBackend.domain.tmap.TmapApi;
-import csu.RouteGuideBackend.domain.parse.dto.ParseTmapResponse;
-import csu.RouteGuideBackend.domain.pathfind.dto.PoisResponseDto;
+import csu.RouteGuideBackend.domain.parse.dto.PoisDto;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -31,14 +30,16 @@ public class TmapParseService {
                 result = pedestrian(response);
                 break;
             case REVERSE_GEOCODING:
-                result = parseGeocoding(response);
+                result = geocoding(response);
                 break;
+            default:
+                throw new IllegalArgumentException("올바르지 않은 enum type입니다");
         }
         return result;
     }
 
-    public String parseGeocoding(String response) throws ParseException {
-        log.info("parse Geocoding Response");
+    private String geocoding(String response) throws ParseException {
+        log.info("parse Geocoding");
 
         String address = null;
         // 응답 정보 파싱
@@ -64,7 +65,7 @@ public class TmapParseService {
      * @return
      * @throws Exception
      */
-    public List<RouteDto> pedestrian(String response) throws ParseException{
+    private PedestrianDto pedestrian(String response) throws ParseException{
         log.info("parse pedestrian");
 
 //        Pathfind pathfind = Pathfind.builder()
@@ -74,7 +75,10 @@ public class TmapParseService {
 //
 //        Pathfind save = pathfindRepository.save(pathfind);
 
+        PedestrianDto pedestrianDto = new PedestrianDto();
         List<RouteDto> route = new ArrayList<>();
+
+        pedestrianDto.setRoute(route);
         double prevX = 0;
         double prevY = 0;
         double x = 0;
@@ -126,7 +130,7 @@ public class TmapParseService {
             throw new ParseException(2);
         }
 
-        return route;
+        return pedestrianDto;
     }
 
     /**
@@ -135,10 +139,13 @@ public class TmapParseService {
      * @return List<DestinationViewDto> 목적지 View DTO 리스트
      */
     // 검색 결과 파싱
-    public List<PoisResponseDto> pois(String response) throws ParseException{
+    private PoisResponseDto pois(String response) throws ParseException{
         log.info("parse pois");
         // 응답 정보 파싱
-        List<PoisResponseDto> destinationViewList = new ArrayList<>();
+        PoisResponseDto poisResponseDto = new PoisResponseDto();
+        List<PoisDto> poisDto = new ArrayList<>();
+
+        poisResponseDto.setPois(poisDto);
         try {
             JSONParser jsonParser = new JSONParser();
             JSONObject json = (JSONObject) jsonParser.parse(response);
@@ -153,8 +160,8 @@ public class TmapParseService {
                 JSONArray newAddress = (JSONArray) newAddressList.get("newAddress");
                 JSONObject fullAddress = (JSONObject) newAddress.get(0);
 
-                destinationViewList.add(
-                        PoisResponseDto.builder()
+                poisDto.add(
+                        PoisDto.builder()
                                 .name(obj.get("name").toString())
                                 .address(fullAddress.get("fullAddressRoad").toString())
                                 .x(Double.parseDouble(fullAddress.get("centerLat").toString())) // x
@@ -164,6 +171,6 @@ public class TmapParseService {
         } catch(Exception e){
             throw new ParseException(2);
         }
-        return destinationViewList;
+        return poisResponseDto;
     }
 }

@@ -1,7 +1,12 @@
 package csu.RouteGuideBackend.domain.pathfind.controller;
 
 import csu.RouteGuideBackend.config.PrincipalDetails;
+import csu.RouteGuideBackend.domain.parse.TmapParseService;
+import csu.RouteGuideBackend.domain.parse.dto.PedestrianDto;
+import csu.RouteGuideBackend.domain.parse.dto.PoisDto;
+import csu.RouteGuideBackend.domain.parse.dto.PoisResponseDto;
 import csu.RouteGuideBackend.domain.pathfind.service.PathfindService;
+import csu.RouteGuideBackend.domain.tmap.TmapApi;
 import csu.RouteGuideBackend.domain.tmap.service.TmapRequestService;
 import csu.RouteGuideBackend.domain.tmap.dto.PoisRequestDto;
 import csu.RouteGuideBackend.domain.tmap.dto.PedestrianRequestDto;
@@ -13,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/path-find")
@@ -21,28 +28,37 @@ public class PathfindApiController {
 
     private final PathfindService pathfindService;
     private final TmapRequestService tmapRequestService;
+    private final TmapParseService tmapParseService;
 
     @GetMapping("/search")
-    public String pois(@ModelAttribute PoisRequestDto dto) throws Exception{
+    public PoisResponseDto pois(@ModelAttribute PoisRequestDto dto) throws Exception{
 //    public ResponseEntity<List<DestinationViewDto>> pois(@RequestParam PoisRequestDto dto) throws Exception{
         log.info("목적지 검색");
 //        HttpResponse<String> response = pathfindService.searchDestination(destination, x, y);
 //        List<DestinationViewDto> destinationViewDtos = pathfindService.parseDestination(response.body()).orElseThrow(() -> new IllegalArgumentException("검색결과가 존재하지 않습니다!"));
 //        return ResponseEntity.ok().body(destinationViewDtos);
-
+        PoisResponseDto pois = null;
         String response = tmapRequestService.pois(dto).body();
-
-        return
+        Object parse = tmapParseService.parseRequest(TmapApi.POIS, response);
+        if(parse instanceof PoisResponseDto)
+            pois = (PoisResponseDto) parse;
+        return pois;
     }
 
     @PostMapping("/start")
 //    public ResponseEntity<pedestrianResponseDto> pedestrian(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody PedestrianRequestDto dto) throws Exception{
-    public String pedestrian(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody PedestrianRequestDto dto) throws Exception{
+    public PedestrianDto pedestrian(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody PedestrianRequestDto dto) throws Exception{
 //        log.info("길찾기 시작 요청");
 //        HttpResponse<String> response = pathfindService.startPathfind(dto);
 //        pedestrianResponseDto startPathFindViewDto = pathfindService.parsePath(principalDetails.getUsername(), response.body());
 //        HttpResponse<String> pedestrian = tmapRequestService.pedestrian(dto);
-        return tmapRequestService.pedestrian(dto).body();
+        PedestrianDto pedestrian = null;
+        String response = tmapRequestService.pedestrian(dto).body();
+        Object parse = tmapParseService.parseRequest(TmapApi.PEDESTRIAN, response);
+        if(parse instanceof PedestrianDto){
+            pedestrian = (PedestrianDto) parse;
+        }
+        return pedestrian;
 //        if(startPathFindViewDto == null){
 //            throw new Exception("파싱중 오류 발생");
 //        }
@@ -77,10 +93,17 @@ public class PathfindApiController {
 //                                              @RequestBody ReverseGeocodingRequestDto dto) throws Exception{
     public String reverseGeocoding(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                 @RequestBody ReverseGeocodingRequestDto dto) throws Exception{
+        String geocoding = null;
         // 경로 정보 조회
 //        Pathfind pathfind = pathfindService.findById(dto.getPathfindId());
 //        checkValidAndThrowException(principalDetails, pathfind.getMember().getEmail());
-        return tmapRequestService.reverseGeocoding(dto).body();
+        String response = tmapRequestService.reverseGeocoding(dto).body();
+        Object parse = tmapParseService.parseRequest(TmapApi.REVERSE_GEOCODING, response);
+        if(parse instanceof String)
+            geocoding = (String) parse;
+
+
+        return geocoding;
 //         응답 조회
 //        GeocodingResponse geocodingResponse = pathfindService.ReverseGeocoding(dto);
 //
