@@ -40,7 +40,7 @@ public class SecurityConfig {
                 // 로그인 페이지 설정
                 .formLogin(login -> login
                         .loginPage("/login").permitAll()
-                        .loginProcessingUrl("/loginProcess").permitAll()
+                        .loginProcessingUrl("/login").permitAll()
                         .usernameParameter("email")
                         .passwordParameter("password")
                         .defaultSuccessUrl("/"))

@@ -27,6 +27,7 @@ public class MemberController {
     public ResponseEntity<MemberViewDto> get(@PathVariable String email, @AuthenticationPrincipal PrincipalDetails principalDetails){
         log.info("{} 회원 조회 요청", email);
 
+
         // 요청 검증
         valid(principalDetails, email);
 
@@ -72,6 +73,10 @@ public class MemberController {
 
     private void valid(PrincipalDetails principalDetails, String email){
         log.info("{} 회원 검증", email);
+        if(principalDetails == null){
+            log.info("토큰 조회 불가");
+            throw new IllegalArgumentException("요청 정보가 존재하지 않습니다[토큰]");
+        }
         if(!principalDetails.getUsername().equals(email)){
             log.info("회원 조회 불가");
             throw new IllegalArgumentException("요청 정보가 토큰과 일치하지 않습니다");
