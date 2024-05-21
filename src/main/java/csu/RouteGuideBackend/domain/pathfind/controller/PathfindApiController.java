@@ -129,6 +129,7 @@ public class PathfindApiController {
         }
 
         // TODO 응답했던 내용을 DB 기록??
+
         String info = pathfindService.currentLocation(geocoding, dto);
 
         return ResponseEntity.ok().body(info);
