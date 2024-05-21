@@ -10,7 +10,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -101,7 +100,7 @@ public class TmapParseService {
                 String description = properties.get("description").toString();
 
                 route.add(RouteDto.builder()
-                        .x(x).y(y)
+                        .lon(x).lat(y)
                         .description(description)
                         .index(index++)
                         .build());
@@ -139,8 +138,8 @@ public class TmapParseService {
                         PoisDto.builder()
                                 .name(obj.get("name").toString())
                                 .address(fullAddress.get("fullAddressRoad").toString())
-                                .x(Double.parseDouble(fullAddress.get("centerLat").toString())) // x
-                                .y(Double.parseDouble(fullAddress.get("centerLon").toString())) // y
+                                .lon(Double.parseDouble(fullAddress.get("centerLat").toString())) // x
+                                .lat(Double.parseDouble(fullAddress.get("centerLon").toString())) // y
                                 .build());
             }
         } catch(Exception e){

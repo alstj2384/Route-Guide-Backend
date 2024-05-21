@@ -48,8 +48,8 @@ public class PathfindService {
                     .index(routeDto.getIndex())
                     .description(routeDto.getDescription())
                     .pathfind(pathfind)
-                    .x(routeDto.getX())
-                    .y(routeDto.getY())
+                    .lon(routeDto.getLon())
+                    .lat(routeDto.getLat())
                     .build();
             routes.add(route);
             routeRepository.save(route);
@@ -79,12 +79,13 @@ public class PathfindService {
         }
 
         Route currentRoute = path.getRoutes().get(dto.getIndex());
-        // index 정보의 x ,y 값 추출
-        double x = currentRoute.getX(); // 경도 Lon
-        double y = currentRoute.getY(); // 위도 Lat
+        // index 정보의 lon ,lat 값 추출
+        double lon = currentRoute.getLon(); // 경도 Lon
+        double lat = currentRoute.getLat(); // 위도 Lat
+
 
         // 현재 위치가 다음 위치와 몇 m 거리인 지 확인
-        double distance = haversine(y, x, dto.getY(), dto.getX());
+        double distance = haversine(lat, lon, dto.getLat(), dto.getLon());
         log.info("{}",distance);
 
 
@@ -110,7 +111,7 @@ public class PathfindService {
         Pathfind find = pathfindRepository.findById(dto.getPathfindId()).orElseThrow(() -> new IllegalArgumentException("요청 정보가 존재하지 않습니다"));
         List<Route> routes = find.getRoutes();
         Route route = routes.get(dto.getIndex());
-        double distance = haversine(route.getY(), route.getX(), dto.getLat(), dto.getLon());
+        double distance = haversine(route.getLat(), route.getLon(), dto.getLat(), dto.getLon());
 
         return info(geocoding, distance);
     }

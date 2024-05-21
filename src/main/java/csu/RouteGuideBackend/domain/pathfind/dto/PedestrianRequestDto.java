@@ -2,9 +2,11 @@ package csu.RouteGuideBackend.domain.pathfind.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
+@ToString
 public class PedestrianRequestDto {
     private double startX;
     private double startY;

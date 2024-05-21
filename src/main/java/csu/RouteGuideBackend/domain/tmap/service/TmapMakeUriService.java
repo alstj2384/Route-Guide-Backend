@@ -51,7 +51,7 @@ public class TmapMakeUriService {
         return TMAP_API_HOST+"/tmap/pois?version=1&searchKeyword="+ URLEncoder.encode(request.getDestination(), "utf-8") +
                 "&searchType=all&page=1&count=10" +
                 "&reqCoordType=WGS84GEO&resCoordType=WGS84GEO&searchtypCd=R" +
-                "&radius=5&centerLat="+request.getX()+"&centerLon="+request.getY()+
+                "&radius=5&centerLat="+request.getLon()+"&centerLon="+request.getLat()+
                 "&multiPoint=N&poiGroupYn=N";
     }
 }

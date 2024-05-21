@@ -65,6 +65,7 @@ public class PathfindApiController {
 
         PedestrianDto pedestrian = null;
         log.info("pedestrian");
+        log.info("{}", dto);
 
         // 보행자 길찾기 API 요청
         HttpResponse<String> response = tmapRequestService.pedestrian(dto);

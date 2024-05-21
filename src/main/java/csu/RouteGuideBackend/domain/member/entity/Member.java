@@ -1,5 +1,6 @@
 package csu.RouteGuideBackend.domain.member.entity;
 
+import csu.RouteGuideBackend.domain.location.Location;
 import csu.RouteGuideBackend.domain.relationship.entity.Relationship;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -50,6 +51,9 @@ public class Member {
     @OneToMany(mappedBy = "member", fetch = FetchType.EAGER)
     private List<Relationship> relationshipList = new ArrayList<>();
 
+    @OneToOne
+    @JoinColumn(name = "location", nullable = true)
+    private Location location;
     @Builder
     public Member(int id, String email, String password, String userName, String phoneNumber, int isDisabled, String role, String provider, String providerId, List<Relationship> relationshipList) {
         this.id = id;
