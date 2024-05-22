@@ -1,0 +1,36 @@
+package csu.RouteGuideBackend.domain.location;
+
+import csu.RouteGuideBackend.domain.member.entity.Member;
+import csu.RouteGuideBackend.domain.member.repository.MemberRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.Optional;
+
+@Service
+@RequiredArgsConstructor
+public class LocationService {
+    private final LocationRepository locationRepository;
+    private final MemberRepository memberRepository;
+
+
+    public void update(int id, double lat, double lon){
+        Member find = memberRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("회원 조회 실패"));
+
+        Location now = Location.builder()
+                .lat(lat)
+                .lon(lon)
+                .member(find)
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        find.setLocation(now);
+
+        locationRepository.save(now);
+        // id = 회원 id
+    }
+
+}

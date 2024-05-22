@@ -4,6 +4,7 @@ import csu.RouteGuideBackend.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -23,12 +24,17 @@ public class Location {
     @Column(name = "lon")
     private double lon;
 
-    @Column(name = "last_access")
-    private Date lastAccess;
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
     @OneToOne
     @JoinColumn(name = "member_id")
-    Member member;
+    private Member member;
+
+    @PreUpdate
+    protected void onUpdate(){
+        updatedAt = LocalDateTime.now();
+    }
 
 
 
