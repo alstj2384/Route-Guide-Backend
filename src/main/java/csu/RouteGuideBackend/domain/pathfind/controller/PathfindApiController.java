@@ -1,6 +1,7 @@
 package csu.RouteGuideBackend.domain.pathfind.controller;
 
 import csu.RouteGuideBackend.config.PrincipalDetails;
+import csu.RouteGuideBackend.domain.location.LocationService;
 import csu.RouteGuideBackend.domain.parse.TmapParseService;
 import csu.RouteGuideBackend.domain.parse.dto.PedestrianDto;
 import csu.RouteGuideBackend.domain.parse.dto.PoisResponseDto;
@@ -37,6 +38,7 @@ public class PathfindApiController {
     private final PathfindService pathfindService;
     private final TmapRequestService tmapRequestService;
     private final TmapParseService tmapParseService;
+    private final LocationService locationService;
 
     @GetMapping("/search")
     public ResponseEntity<PoisResponseDto> pois(@ModelAttribute PoisRequestDto dto) throws ParseException, ResponseStatusException, IllegalArgumentException, IOException, InterruptedException{
@@ -133,6 +135,7 @@ public class PathfindApiController {
         // TODO 응답했던 내용을 DB 기록??
 
         String info = pathfindService.currentLocation(geocoding, dto);
+        locationService.update(pathfindService.findById(pathfind.getId()).getMember().getId(), dto.getLat(), dto.getLon());
 
         return ResponseEntity.ok().body(info);
     }
