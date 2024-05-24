@@ -12,6 +12,6 @@ import lombok.ToString;
 public class PoisDto {
     String name;
     String address;
-    double x;
-    double y;
+    double lon;
+    double lat;
 }

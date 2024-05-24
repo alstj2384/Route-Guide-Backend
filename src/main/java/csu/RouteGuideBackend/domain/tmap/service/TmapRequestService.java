@@ -109,9 +109,10 @@ public class TmapRequestService {
 
     private void checkError(HttpResponse<String> response) throws ResponseStatusException{
 
-        if(response.statusCode() == 401) {
+        if(response.statusCode() == 401 || response.statusCode() == 400) {
             log.info("checkError : 권한 없음 예외 발생");
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "TMAP API 요청에 대한 권한이 없습니다");
+
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, response.body());
         }
         log.info("checkError : no Error");
     }

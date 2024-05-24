@@ -1,6 +1,5 @@
 package csu.RouteGuideBackend.domain.pathfind.entity;
 
-import csu.RouteGuideBackend.domain.pathfind.entity.Pathfind;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,10 +18,10 @@ public class Route {
     @JoinColumn(name = "pathfind_id", nullable = false)
     private Pathfind pathfind;
 
-    @Column(name = "x", nullable = false)
-    private double x;
-    @Column(name = "y", nullable = false)
-    private double y;
+    @Column(name = "lon", nullable = false)
+    private double lon;
+    @Column(name = "lat", nullable = false)
+    private double lat;
     @Column(name = "description", nullable = false)
     private String description;
     @Column(name = "index", nullable = false)
@@ -32,8 +31,8 @@ public class Route {
     public String toString() {
         return "Route{" +
                 "id=" + id +
-                ", x=" + x +
-                ", y=" + y +
+                ", x=" + lon +
+                ", y=" + lat +
                 ", description='" + description + '\'' +
                 ", index=" + index +
                 '}';

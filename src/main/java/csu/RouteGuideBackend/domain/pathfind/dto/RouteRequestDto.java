@@ -8,7 +8,7 @@ import lombok.Getter;
 public class RouteRequestDto {
     private Long pathfindId;
     private int index;
-    private double x;
-    private double y;
+    private double lon;
+    private double lat;
 
 }
