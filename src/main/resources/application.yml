@@ -1,18 +1,4 @@
 spring:
   profiles:
     include: secrets
-  application:
-    name: name=Route-Guide-Backend
-  datasource:
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:testdb
-    username: sa
-    password:
-  jpa:
-    hibernate:
-      ddl-auto: create
-    defer-datasource-initialization: true
-  sql:
-    init:
-      mode: always
-
+    active: dev

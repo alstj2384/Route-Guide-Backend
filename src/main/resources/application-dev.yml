@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: name=Route-Guide-Backend
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://Route-Guide-Backend://3306/route-guide
+    username: user
+    password: 1234
+    hikari:
+      driver-class-name: org.mariadb.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create
+    defer-datasource-initialization: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MariaDBDialect
+  sql:
+    init:
+      mode: always
+
+
