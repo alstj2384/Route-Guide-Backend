@@ -1,0 +1,3 @@
+CREATE DATABASE route-guide;
+CREATE USER 'user'@'%' IDENTIFIED BY '1234';
+GRANT ALL PRIVILEGES ON *.* TO 'user'@'%';

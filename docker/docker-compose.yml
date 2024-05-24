@@ -1,0 +1,20 @@
+version : '3'
+
+services:
+  db:
+    build:
+      context : ../
+      dockerfile : ./Docker/db-container/Dockerfile
+    environment:
+      - MARIADB_ROOT_PASSWORD=1234
+    ports:
+      - "3306:3306"
+
+  web:
+    build:
+      context: ../
+      dockerfile: ./Docker/server-container/Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./:/app/
