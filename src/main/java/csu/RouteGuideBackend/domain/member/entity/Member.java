@@ -51,7 +51,7 @@ public class Member {
     @OneToMany(mappedBy = "member", fetch = FetchType.EAGER)
     private List<Relationship> relationshipList = new ArrayList<>();
 
-    @OneToOne
+    @OneToOne(mappedBy = "member")
     @JoinColumn(name = "location", nullable = true)
     private Location location;
     @Builder

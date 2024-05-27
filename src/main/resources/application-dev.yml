@@ -1,22 +1,12 @@
 spring:
-#  application:
-#    name: Route-Guide-Backend
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://docker-route-guide-db-1:/3306/route_guide
+    url: jdbc:mariadb://docker-db-1:3306/route
     username: user
     password: 1234
-    hikari:
-      driver-class-name: org.mariadb.jdbc.Driver
   jpa:
-    hibernate:
-      ddl-auto: create
-    defer-datasource-initialization: true
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MariaDBDialect
-  sql:
-    init:
-      mode: always
 
 

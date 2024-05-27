@@ -1,6 +1,7 @@
 package csu.RouteGuideBackend.domain.pathfind.controller;
 
 import csu.RouteGuideBackend.config.PrincipalDetails;
+//import csu.RouteGuideBackend.domain.location.LocationService;
 import csu.RouteGuideBackend.domain.location.LocationService;
 import csu.RouteGuideBackend.domain.parse.TmapParseService;
 import csu.RouteGuideBackend.domain.parse.dto.PedestrianDto;
@@ -100,6 +101,7 @@ public class PathfindApiController {
         checkValidAndThrowException(principalDetails, pathfind.getMember().getEmail());
 
         RouteResponseDto response = pathfindService.findRoute(dto);
+        locationService.update(pathfindService.findById(pathfind.getId()).getMember().getId(), dto.getLat(), dto.getLon());
 
 
         return ResponseEntity.ok().body(response);
@@ -135,7 +137,6 @@ public class PathfindApiController {
         // TODO 응답했던 내용을 DB 기록??
 
         String info = pathfindService.currentLocation(geocoding, dto);
-        locationService.update(pathfindService.findById(pathfind.getId()).getMember().getId(), dto.getLat(), dto.getLon());
 
         return ResponseEntity.ok().body(info);
     }

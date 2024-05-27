@@ -27,7 +27,7 @@ public class Location {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 

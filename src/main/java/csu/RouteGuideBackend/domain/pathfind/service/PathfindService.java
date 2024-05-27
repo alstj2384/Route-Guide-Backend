@@ -45,7 +45,7 @@ public class PathfindService {
 
         for (RouteDto routeDto : dto.getRoute()) {
             Route route = Route.builder()
-                    .index(routeDto.getIndex())
+                    .route_index(routeDto.getIndex())
                     .description(routeDto.getDescription())
                     .pathfind(pathfind)
                     .lon(routeDto.getLon())

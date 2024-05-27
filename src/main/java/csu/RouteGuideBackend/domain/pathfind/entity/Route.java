@@ -24,8 +24,8 @@ public class Route {
     private double lat;
     @Column(name = "description", nullable = false)
     private String description;
-    @Column(name = "index", nullable = false)
-    private int index;
+    @Column(name = "route_index", nullable = false)
+    private int route_index;
 
     @Override
     public String toString() {
@@ -34,7 +34,7 @@ public class Route {
                 ", x=" + lon +
                 ", y=" + lat +
                 ", description='" + description + '\'' +
-                ", index=" + index +
+                ", index=" + route_index +
                 '}';
     }
 
