@@ -1,6 +1,6 @@
 spring:
-  application:
-    name: name=Route-Guide-Backend
+#  application:
+#    name: Route-Guide-Backend
   datasource:
     driver-class-name: org.h2.Driver
     url: jdbc:h2:mem:testdb

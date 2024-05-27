@@ -4,17 +4,25 @@ services:
   db:
     build:
       context : ../
-      dockerfile : ./Docker/db-container/Dockerfile
+      dockerfile : ./docker/db-container/Dockerfile
     environment:
       - MARIADB_ROOT_PASSWORD=1234
     ports:
       - "3306:3306"
+    networks:
+      - my-network
 
-  web:
+  server:
     build:
       context: ../
-      dockerfile: ./Docker/server-container/Dockerfile
+      dockerfile: ./docker/server-container/Dockerfile
     ports:
       - "8080:8080"
     volumes:
       - ./:/app/
+    networks:
+      - my-network
+
+
+networks:
+  my-network:

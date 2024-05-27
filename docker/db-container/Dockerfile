@@ -1,2 +1,2 @@
 FROM mariadb
-ADD /Docker/configdb/init.sql /docker-entrypoint-initdb.d/
+ADD /docker/db-container/init.sql /docker-entrypoint-initdb.d/

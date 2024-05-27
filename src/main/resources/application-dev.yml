@@ -1,9 +1,9 @@
 spring:
-  application:
-    name: name=Route-Guide-Backend
+#  application:
+#    name: Route-Guide-Backend
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://Route-Guide-Backend://3306/route-guide
+    url: jdbc:mariadb://docker-route-guide-db-1:/3306/route_guide
     username: user
     password: 1234
     hikari:

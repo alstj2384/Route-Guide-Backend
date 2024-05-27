@@ -1,3 +1,50 @@
-CREATE DATABASE route-guide;
+CREATE DATABASE route;
 CREATE USER 'user'@'%' IDENTIFIED BY '1234';
 GRANT ALL PRIVILEGES ON *.* TO 'user'@'%';
+FLUSH PRIVILEGES;
+--
+--USE route;
+--
+---- Member 테이블 생성
+--CREATE TABLE member (
+--    id INT AUTO_INCREMENT PRIMARY KEY,
+--    email VARCHAR(255) NOT NULL UNIQUE,
+--    password VARCHAR(255) NOT NULL,
+--    user_name VARCHAR(255) NOT NULL,
+--    phone_number VARCHAR(20) NOT NULL,
+--    is_disabled TINYINT NOT NULL,
+--    role VARCHAR(50) NOT NULL,
+--    provider VARCHAR(255),
+--    provider_id VARCHAR(255),
+--    location_id BIGINT,
+--    FOREIGN KEY (location_id) REFERENCES location(id) -- assuming location table exists
+--);
+--
+---- Pathfind 테이블 생성
+--CREATE TABLE pathfind (
+--    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+--    member_id INT NOT NULL,
+--    FOREIGN KEY (member_id) REFERENCES member(id)
+--);
+--
+---- Route 테이블 생성
+--CREATE TABLE route (
+--    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+--    pathfind_id BIGINT NOT NULL,
+--    lon DOUBLE NOT NULL,
+--    lat DOUBLE NOT NULL,
+--    description VARCHAR(255) NOT NULL,
+--    route_index INT NOT NULL,
+--    FOREIGN KEY (pathfind_id) REFERENCES pathfind(id)
+--);
+--
+---- Relationship 테이블 생성
+--CREATE TABLE relationship (
+--    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+--    member_id INT NOT NULL,
+--    user_email VARCHAR(255) NOT NULL,
+--    friend_email VARCHAR(255) NOT NULL,
+--    relationship_status VARCHAR(50) NOT NULL, -- assuming status is stored as a string, adjust as necessary
+--    is_from BOOLEAN NOT NULL,
+--    FOREIGN KEY (member_id) REFERENCES member(id)
+--);
