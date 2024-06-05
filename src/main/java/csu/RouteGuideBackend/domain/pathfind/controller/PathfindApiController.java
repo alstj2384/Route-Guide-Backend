@@ -6,16 +6,11 @@ import csu.RouteGuideBackend.domain.location.LocationService;
 import csu.RouteGuideBackend.domain.parse.TmapParseService;
 import csu.RouteGuideBackend.domain.parse.dto.PedestrianDto;
 import csu.RouteGuideBackend.domain.parse.dto.PoisResponseDto;
-import csu.RouteGuideBackend.domain.pathfind.dto.PedestrianResponseDto;
-import csu.RouteGuideBackend.domain.pathfind.dto.RouteRequestDto;
-import csu.RouteGuideBackend.domain.pathfind.dto.RouteResponseDto;
+import csu.RouteGuideBackend.domain.pathfind.dto.*;
 import csu.RouteGuideBackend.domain.pathfind.entity.Pathfind;
 import csu.RouteGuideBackend.domain.pathfind.service.PathfindService;
 import csu.RouteGuideBackend.domain.tmap.TmapApi;
 import csu.RouteGuideBackend.domain.tmap.service.TmapRequestService;
-import csu.RouteGuideBackend.domain.pathfind.dto.PoisRequestDto;
-import csu.RouteGuideBackend.domain.pathfind.dto.PedestrianRequestDto;
-import csu.RouteGuideBackend.domain.pathfind.dto.ReverseGeocodingRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.parser.ParseException;
@@ -110,8 +105,8 @@ public class PathfindApiController {
 
 
     @PostMapping("/current-location")
-    public ResponseEntity<String> reverseGeocoding(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                                @RequestBody ReverseGeocodingRequestDto dto) throws ParseException, ResponseStatusException , IOException, IllegalArgumentException, InterruptedException{
+    public ResponseEntity<GeocodingResponseDto> reverseGeocoding(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                                 @RequestBody ReverseGeocodingRequestDto dto) throws ParseException, ResponseStatusException , IOException, IllegalArgumentException, InterruptedException{
 
         Pathfind pathfind = pathfindService.findById(dto.getPathfindId());
 
@@ -134,11 +129,10 @@ public class PathfindApiController {
             log.info("reverseGeocoding parseResponse : {}", parse);
         }
 
-        // TODO 응답했던 내용을 DB 기록??
 
-        String info = pathfindService.currentLocation(geocoding, dto);
-
-        return ResponseEntity.ok().body(info);
+        return ResponseEntity.ok().body(GeocodingResponseDto.builder()
+                .description(pathfindService.currentLocation(geocoding, dto))
+                .build());
     }
 
     private boolean valid(PrincipalDetails principalDetails, String userName){
