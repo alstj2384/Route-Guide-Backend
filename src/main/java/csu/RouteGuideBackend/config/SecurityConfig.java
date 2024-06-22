@@ -43,7 +43,9 @@ public class SecurityConfig {
                         .loginProcessingUrl("/login").permitAll()
                         .usernameParameter("email")
                         .passwordParameter("password")
-                        .defaultSuccessUrl("/"))
+                        .defaultSuccessUrl("/")
+                        .successHandler(new CustomAuthenticationSuccessHandler())
+                        .failureHandler(new CustomAuthenticationFailureHandler()))
 //                .oauth2Login(login -> login
 //                        .loginPage("/login-form")
 //                        .userInfoEndpoint()
